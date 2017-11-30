@@ -1,76 +1,36 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <link rel="icon" href="../../favicon.ico">
-
-  <title>Sign up & Sign in</title>
-  {% load static %}
-  <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
-  <script src="{% static "js/jquery-1.9.0.js" %}"></script>
-  <script src="{% static "js/bootstrap.min.js" %}"></script>
-
-
-</head>
-
-<body>
-
+{% extends "tabby/base.html" %}
+{% block title %}
+  Sign up/ Sign in
+{% endblock title %}
+{% block content %}
   <div class="container">
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">TabbY</a>
-        </div>
- 
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="#">111</a></li>
-          <li><a href="#">222</a></li>
-        </ul>
-
-
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="#">Sign up/ Sign in</a></li>
-        </ul>
-
-      </div>
-    </nav>
-
     <div class="row">
       <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
     </div>
-    
     <div class="row">
       <div class="col-md-5">
         <form class="form-signin" action="{% url 'tabby:register' %}" method="POST">
+          {% csrf_token %}
           <h2 class="form-signin-heading" style="margin-top: 50px;margin-bottom: 20px;">Sign up</h2>
+          <p>Please enter your user name:</p>
+          <input type="text" name="user" id="inputUser" class="form-control" placeholder="User name" required autofocus><br>
           <p>Please enter your email address:</p>
-          <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus><br>
-
+          <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required><br>
           <p>Please enter your password:</p>
-          <input type="password" id="inputPassword" class="form-control" placeholder="Password" required><br>
-
-          <p>Please choose your id:</p>
-          <input type="text" id="inputID" class="form-control" placeholder="ID"><br>
-          
-          <button class="btn btn-lg btn-primary btn-block" type="submit">Sign Up</button>
+          <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required><br>
+          <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="return coPassword()">Sign Up</button>
         </form>
       </div>
-      <div class="col-md-2">
-        
+      <div class="col-md-2"> 
       </div>
       <div class="col-md-5">
         <form class="form-signin" action="{% url 'tabby:login' %}" method="POST">
+          {% csrf_token %}
           <h2 class="form-signin-heading" style="margin-top: 50px;margin-bottom: 20px;">Please sign in</h2>
-          <p>Please enter your email address:</p>
-          <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus><br>
-
+          <p>Please enter your user name:</p>
+          <input type="text" name="user" id="inputUser" class="form-control" placeholder="User name" required autofocus><br>
           <p>Please enter your password:</p>
-          <input type="password" id="inputPassword" class="form-control" placeholder="Password" required><br>
+          <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required><br>
           <div class="checkbox">
             <label>
               <input type="checkbox" value="remember-me"> Remember me
@@ -80,10 +40,5 @@
         </form>
       </div>
     </div>
-  </div> <!-- /container -->
-
-
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
-</body>
-</html>
+  </div>
+{% endblock content %}
