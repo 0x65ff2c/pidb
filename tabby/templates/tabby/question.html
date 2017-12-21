@@ -1,0 +1,74 @@
+{% extends "tabby/base.html" %}
+{% block title %}
+Tabby
+{% endblock title %}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "css/question.css" %}">
+<link rel="stylesheet" href="{% static "css/qa.css" %}">
+{% endblock css %}
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="h3 card-title">some title</h1>     
+            <div style="width: 100%">
+                <ul class="tag-list">
+                    <li><a href="#" class="tag">1213</a></li>
+                    <li><a href="#" class="tag">2342</a></li>
+                </ul>
+                <div class="q-author">
+                    <a href="#"><strong>asdfonasdf</strong></a>
+                    1h ago
+                </div>
+            </div>
+            <p class="card-text">as;nod;av;dsiovnda;sfsdjfao;sifneasnefas;nsdlan
+                ansdonc;ia;sncaoidsnc;asefn;a
+                ansodfinasecl;aidsonf;anewn
+            </p>
+        </div>
+    </div>
+    <div class="card">
+        <h1 class="h3 card-header">Answers</h1>
+        <div class="card-body">
+            <article class="ans-item">
+                <p class="card-text">some text</p>
+                <div class="row">
+                    <div class="col-md-9 ans-info">
+                        9h ago
+                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <span>7votes</span>
+                    </div>
+                    <div class="col-md-3 ans-author">
+                        some author
+                    </div>
+                </div>
+                <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+            </article>
+            <article class="ans-item">
+                <p class="card-text">some text</p>
+                <div class="row">
+                    <div class="col-md-9 ans-info">
+                        9h ago
+                    </div>
+                    <div class="col-md-3 ans-author">
+                        some author
+                    </div>
+                </div>
+                <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+            </article>
+        </div>
+    </div>
+    <div class="card">
+        <h1 class="h3 card-header">Write your answer</h1>
+        <div class="card-body">
+            <form action="#">
+                <div class="form-group">
+                    <textarea class="form-control" rows="10"></textarea>
+                </div>
+                <button type="submit" class="btn btn-default">submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

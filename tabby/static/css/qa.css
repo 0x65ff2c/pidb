@@ -1,0 +1,19 @@
+.q-author {
+    display: inline-block;
+    color: #999;
+}
+
+.card-header {
+    border-bottom: 2px #bbb solid;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+}
+
+.ans-info {
+    color: #999;
+}
+
+.ans-author {
+    text-align: right;
+    color: #017E66;
+}
