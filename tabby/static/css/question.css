@@ -16,7 +16,6 @@
 
 .qa_rank div {
     text-align: center;
-    float: left;
 }
 
 .author {
@@ -29,18 +28,19 @@
 }
 
 .tag-list {
-    float: right;
+    padding-left: 0px;
+    display: inline-block;
 }
 
 .title {
-    display: inline;
+    display: inline-block;
     margin: 0 5px 0 0;
     font-size: 16px;
 }
 
 .tag-list li {
     list-style: none;
-    float: left;
+    display: inline-block;
 }
 
 .tag {

@@ -1,0 +1,39 @@
+{% extends "tabby/base.html" %}
+{% block title %}
+Tabby
+{% endblock title %}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "css/question.css" %}">
+<link rel="stylesheet" href="{% static "css/qa.css" %}">
+{% endblock css %}
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="h3 card-title">some title</h1>     
+            <div style="width: 100%">
+                <ul class="tag-list">
+                    <li><a href="#" class="tag">1213</a></li>
+                    <li><a href="#" class="tag">2342</a></li>
+                </ul>
+                <div class="q-author">
+                    <a href="#"><strong>asdfonasdf</strong></a>
+                    1h ago
+                </div>
+            </div>
+            <p class="card-text">as;nod;av;dsiovnda;sfsdjfao;sifneasnefas;nsdlan
+                ansdonc;ia;sncaoidsnc;asefn;a
+                ansodfinasecl;aidsonf;anewn
+            </p>
+        </div>
+    </div>
+    <div class="card">
+        <h1 class=" h3 card-header">Answers</h1>
+        <div class="card-body">
+            <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+            
+        </div>
+    </div>
+</div>
+{% endblock content %}

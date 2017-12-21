@@ -27,7 +27,7 @@ def login(request):
         else:
             return render(request, 'tabby/error.html', {'err_msg': 'incorrect username or password.'})
     else:
-        return render(request, 'tabby/error.html', {'err_msg': 'method should be POST?'})
+        return render(request, 'tabby/login.html', {})
 
 def register(request):
     if request.method == 'POST':
@@ -58,3 +58,6 @@ def newQuestion(request):
             return render(request, 'tabby/error.html', {'err_msg': 'not login...'})
     else:
         return render(request, 'tabby/new_question.html', {})
+
+def question(request):
+    return render(request, 'tabby/question.html', {})

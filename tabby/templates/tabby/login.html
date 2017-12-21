@@ -26,7 +26,7 @@
       <div class="col-md-5">
         <form class="form-signin" action="{% url 'tabby:login' %}" method="POST">
           {% csrf_token %}
-          <h2 class="form-signin-heading" style="margin-top: 50px;margin-bottom: 20px;">Please sign in</h2>
+          <h2 class="form-signin-heading" style="margin-top: 50px;margin-bottom: 20px;">Sign in</h2>
           <p>Please enter your user name:</p>
           <input type="text" name="user" id="inputUser" class="form-control" placeholder="User name" required autofocus><br>
           <p>Please enter your password:</p>
