@@ -1,0 +1,57 @@
+.votes {
+    display: inline-block;
+    height: 40px;
+    width: 45px;
+    margin: 0 6px;
+}
+
+.answers {
+    display: inline-block;
+    height: 40px;
+    width: 45px;
+    margin: 0 6px;
+    background-color: #AD3A37;
+    color: #fff;
+}
+
+.qa_rank div {
+    text-align: center;
+    float: left;
+}
+
+.author {
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+.author a {
+    color: #999;
+}
+
+.tag-list {
+    float: right;
+}
+
+.title {
+    display: inline;
+    margin: 0 5px 0 0;
+    font-size: 16px;
+}
+
+.tag-list li {
+    list-style: none;
+    float: left;
+}
+
+.tag {
+    margin-left: 3px;
+    display: inline-block;
+    padding: 0 6px;
+    color: #017E66;
+    background-color: rgba(1,126,102,0.08);
+    height: 22px;
+    line-height: 22px;
+    font-weight: normal;
+    font-size: 13px;
+    text-align: center;
+}

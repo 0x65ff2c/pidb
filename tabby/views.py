@@ -5,6 +5,13 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from .models import Tuser, Question
 
+def index(request):
+    question = {
+        'votes': '2333', 'answers': '10', 'author': 'carl', 'time': '1h ago',
+        'title': 'some title', 'tags': ['tag1', 'tag2']}
+    test = [question, question]
+    return render(request, 'tabby/index.html', {'q_list': test})
+
 def login(request):
     if request.method == 'POST':
         name = request.POST.get('user', None)
