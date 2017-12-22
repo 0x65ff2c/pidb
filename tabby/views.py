@@ -3,7 +3,7 @@ from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.utils import timezone
-from .models import Tuser, Question
+from .models import *
 from django.db.models import *
 import datetime
 
@@ -85,18 +85,18 @@ def home(request):
 		for question in Question.objects.all():
 			q_dict = {}
 			q_dict['title'] = question.title
-		#	q_dict['category'] = []
+			q_dict['category'] = [Category.objects.all().get(pk=x).name for x in question.category.strip().split(',')]
 			related_reply = question.reply_set.all()
 			q_dict['reply_num'] = related_reply.count()
 			q_dict.update(related_reply.aggregate(total_thumb = Sum('thumb_up')))
 			if q_dict['total_thumb'] is None:
 				q_dict['total_thumb'] = 0
 			if related_reply.count() > 0:
-				q_dict['latest_act_user'] = related_reply.order_by('-put_time')[0].tuser.username
+				q_dict['latest_act_user'] = related_reply.order_by('-put_time')[0].tuser.user.username
 				q_dict['latest_act_time'] = getTimeDiff(related_reply.order_by('-put_time')[0].put_time, timezone.now())
 				q_dict['latest_act_type'] = 'reply'
 			else:
-				q_dict['latest_act_user'] = question.tuser.username
+				q_dict['latest_act_user'] = question.tuser.user.username
 				q_dict['latest_act_time'] = getTimeDiff(question.put_time, timezone.now())
 				q_dict['latest_act_type'] = 'ask'
 			q_list.append(q_dict)

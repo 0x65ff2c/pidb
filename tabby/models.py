@@ -4,12 +4,11 @@ from django.contrib.auth.models import User
 class Tuser(models.Model):
     user = models.OneToOneField(User)
     status = models.IntegerField(default=0)
-    username = models.CharField(max_length=200, default='')
 
 class Question(models.Model):
     tuser = models.ForeignKey(Tuser, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    category = models.IntegerField()
+    category = models.CharField(max_length=200)
     description = models.TextField()
     put_time = models.DateTimeField(auto_now_add=True)
 

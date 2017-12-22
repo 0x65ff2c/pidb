@@ -10,7 +10,11 @@
     home
     <h1>QUESTIONS</h1>
     {% for question in question_info %}
-    <p>Title: {{ question.title }} </p> 
+    <p>Title: {{ question.title }} </p>
+	<p>Category: 
+	{% for name in question.category %}
+		<p> {{name}} </p>
+	{% endfor %} </p>	 
 	<p>reply_num: {{ question.reply_num }} </p>
 	<p>total_thumb: {{ question.total_thumb }}</p>
 	<p>latest_act_user: {{ question.latest_act_user }}</p>
