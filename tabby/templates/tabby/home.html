@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Welcome</title>
+</head>
+<body>
+    home
+    <h1>QUESTIONS</h1>
+    {% for question in question_info %}
+    <p>Title: {{ question.title }} </p> 
+	<p>reply_num: {{ question.reply_num }} </p>
+	<p>total_thumb: {{ question.total_thumb }}</p>
+	<p>latest_act_user: {{ question.latest_act_user }}</p>
+	<p>latest_act_time: {{ question.latest_act_time }}</p>
+	<p>latest_act_type: {{ question.latest_act_type }}</p></br>
+    {% endfor %}
+</body>
+</html>
