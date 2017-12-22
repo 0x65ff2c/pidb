@@ -1,35 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>login</title>
-</head>
-<body>
-    <form action="{% url 'tabby:login' %}" method="POST">
-    {% csrf_token %}
-        用户名：
-        <input type="text" name="user">
-        <br>
-        密码：
-        <input type="password" name="password">
-        <br>
-        <input type="submit" value="submit">
-    </form>
-    don't have an account? Sign up now!<br>
-    <form action="{% url 'tabby:register' %}" method="POST">
-    {% csrf_token %}
-        用户名：
-        <input type="text" name="user">
-        <br>
-        密码：
-        <input type="password" name="password">
-        <br>
-        邮箱：
-        <input type="email" name="email">
-        <br>
-        <input type="submit" value="submit">
-    </form>
-</body>
-</html>
+{% extends "tabby/base.html" %}
+{% block title %}
+  Sign up/ Sign in
+{% endblock title %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+    </div>
+    <div class="row">
+      <div class="col-md-5">
+        <form class="form-signin" action="{% url 'tabby:register' %}" method="POST">
+          {% csrf_token %}
+          <h2 class="form-signin-heading" style="margin-top: 50px;margin-bottom: 20px;">Sign up</h2>
+          <p>Please enter your user name:</p>
+          <input type="text" name="user" id="inputUser" class="form-control" placeholder="User name" required autofocus><br>
+          <p>Please enter your email address:</p>
+          <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required><br>
+          <p>Please enter your password:</p>
+          <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required><br>
+          <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="return coPassword()">Sign Up</button>
+        </form>
+      </div>
+      <div class="col-md-2"> 
+      </div>
+      <div class="col-md-5">
+        <form class="form-signin" action="{% url 'tabby:login' %}" method="POST">
+          {% csrf_token %}
+          <h2 class="form-signin-heading" style="margin-top: 50px;margin-bottom: 20px;">Sign in</h2>
+          <p>Please enter your user name:</p>
+          <input type="text" name="user" id="inputUser" class="form-control" placeholder="User name" required autofocus><br>
+          <p>Please enter your password:</p>
+          <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required><br>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" value="remember-me"> Remember me
+            </label>
+          </div>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
