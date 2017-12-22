@@ -42,16 +42,3 @@
     list-style: none;
     display: inline-block;
 }
-
-.tag {
-    margin-left: 3px;
-    display: inline-block;
-    padding: 0 6px;
-    color: #017E66;
-    background-color: rgba(1,126,102,0.08);
-    height: 22px;
-    line-height: 22px;
-    font-weight: normal;
-    font-size: 13px;
-    text-align: center;
-}
