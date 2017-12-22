@@ -55,12 +55,13 @@ Tabby
     {% if is_authenticated %}
         <h1 class="h3 card-header">Write your answer</h1>
         <div class="card-body">
-            <form action="{% url 'tabby:new_answer' %}" method="POST">
+            <form action="{% url 'tabby:new_answer' %}" method="POST"> {% csrf_token %}
                 <input type="hidden" name="q_id" value="{{ q_id }}">
                 <div class="form-group">
                     <textarea class="form-control" name="ans" rows="10" style="width: 70%;"></textarea>
                 </div>
                 <button type="submit" class="btn btn-default">submit</button>
+
             </form>
         </div>
     {% else %}
