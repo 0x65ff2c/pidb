@@ -3,7 +3,27 @@ from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.utils import timezone
-from .models import Tuser, Question
+from .models import *
+from django.db.models import *
+import datetime
+
+def getTimeDiff(startTime, endTime):
+	
+	''' returns a string respresenting the difference. eg. "2 days ago""37 minutes ago" '''	
+	
+	diff = endTime - startTime
+	if diff.days >= 1:
+		return '%d day%s ago' % (diff.days, '' if diff.days == 1 else 's')
+	if diff.seconds < 60:
+		return '%d second%s ago' % (diff.seconds, '' if diff.seconds == 1 else 's')
+	if diff.seconds < 3600:
+		minutes = int(diff.seconds / 60)
+		return '%d minute%s ago' % (minutes, '' if minutes == 1 else 's')
+	
+	hours = int(diff.seconds / 3600)
+	return '%d hour%s ago' % (hours, '' if hours == 1 else 's')
+
+
 
 def index(request):
     question = {
@@ -81,14 +101,14 @@ def question(request, q_id):
     q_author = q.tuser.user.username
     ans_list = []
     for ans in ans_set:
-        time_diff = getTimeDiff(ans.put_time, timezone.now)
+        time_diff = getTimeDiff(ans.put_time, timezone.now())
         ans_info = {
             'time_diff': time_diff,
             'description': ans.description,
             'author': ans.tuser.user.username,
             'votes': ans.thumb_up
         }
-        ans_list.push(ans_info)
+        ans_list.append(ans_info)
     return render(request, 'tabby/question.html', 
         {'is_authenticated': is_authenticated,
         'q_id': q_id,
@@ -97,3 +117,29 @@ def question(request, q_id):
         'tags': [tag],
         'q_author': q_author,
         'ans_list': ans_list})
+
+def home(request):
+	if request.method == 'GET':
+		q_list = []
+		for question in Question.objects.all():
+			q_dict = {}
+			q_dict['title'] = question.title
+			q_dict['category'] = [Category.objects.all().get(pk=x).name for x in question.category.strip().split(',')]
+			related_reply = question.reply_set.all()
+			q_dict['reply_num'] = related_reply.count()
+			q_dict.update(related_reply.aggregate(total_thumb = Sum('thumb_up')))
+			if q_dict['total_thumb'] is None:
+				q_dict['total_thumb'] = 0
+			if related_reply.count() > 0:
+				q_dict['latest_act_user'] = related_reply.order_by('-put_time')[0].tuser.user.username
+				q_dict['latest_act_time'] = getTimeDiff(related_reply.order_by('-put_time')[0].put_time, timezone.now())
+				q_dict['latest_act_type'] = 'reply'
+			else:
+				q_dict['latest_act_user'] = question.tuser.user.username
+				q_dict['latest_act_time'] = getTimeDiff(question.put_time, timezone.now())
+				q_dict['latest_act_type'] = 'ask'
+			q_list.append(q_dict)
+
+		return render(request, 'tabby/home.html', {'question_info': q_list})
+	else:
+		pass	

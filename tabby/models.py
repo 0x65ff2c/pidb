@@ -8,13 +8,21 @@ class Tuser(models.Model):
 class Question(models.Model):
     tuser = models.ForeignKey(Tuser, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    category = models.IntegerField()
+    category = models.CharField(max_length=200)
     description = models.TextField()
-    put_time = models.DateField(auto_now_add=True)
+    put_time = models.DateTimeField(auto_now_add=True)
 
 class Reply(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     tuser = models.ForeignKey(Tuser, on_delete=models.CASCADE)
-    put_time = models.DateField(auto_now_add=True)
+    put_time = models.DateTimeField(auto_now_add=True)
     thumb_up = models.IntegerField(default=0)
     description = models.TextField()
+
+class ThumbRelation(models.Model):
+	reply = models.ForeignKey(Reply, on_delete=models.CASCADE)
+	tuser = models.ForeignKey(Tuser, on_delete=models.CASCADE)
+	thumb_flag = models.BooleanField()
+
+class Category(models.Model):
+	name = models.CharField(max_length=200)
