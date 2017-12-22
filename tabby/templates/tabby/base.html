@@ -20,14 +20,18 @@
     <nav class="navbar navbar-default" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">TabbY</a>
+          <a class="navbar-brand" href="/">TabbY</a>
         </div>
         <ul class="nav navbar-nav">
           <li class="active"><a href="#">111</a></li>
           <li><a href="#">222</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="#">Sign up/ Sign in</a></li>
+        {% if is_authenticated %}
+          Welcome
+        {% else %}
+          <li><a href="/login">Sign up/ Sign in</a></li>
+        {% endif %}
         </ul>
       </div>
     </nav>

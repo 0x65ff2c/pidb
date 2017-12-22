@@ -59,5 +59,41 @@ def newQuestion(request):
     else:
         return render(request, 'tabby/new_question.html', {})
 
-def question(request):
-    return render(request, 'tabby/question.html', {})
+def newAnswer(request):
+    if request.method == 'POST':
+        q_id = request.POST.get('q_id', None)
+        description = request.POST.get('ans', None)
+
+        return render(request, 'tabby/new_answer.html', {})
+    else:
+        return render(request, 'tabby/error.html', {'err_msg': 'method should be Post'})
+
+def question(request, q_id):
+    is_authenticated = True if request.user.is_authenticated else False
+    try:
+        q = Question.objects.get(id=q_id)
+        ans_set = q.reply_set.all()
+    except:
+        return render(request, 'tabby/error.html', {'err_msg': 'question not found'})
+    title = q.title
+    description = q.description
+    tag = q.category
+    q_author = q.tuser.user.username
+    ans_list = []
+    for ans in ans_set:
+        time_diff = getTimeDiff(ans.put_time, timezone.now)
+        ans_info = {
+            'time_diff': time_diff,
+            'description': ans.description,
+            'author': ans.tuser.user.username,
+            'votes': ans.thumb_up
+        }
+        ans_list.push(ans_info)
+    return render(request, 'tabby/question.html', 
+        {'is_authenticated': is_authenticated,
+        'q_id': q_id,
+        'title': title,
+        'description': description,
+        'tags': [tag],
+        'q_author': q_author,
+        'ans_list': ans_list})
