@@ -29,13 +29,17 @@ Tabby
         <div class="row">
           <div class="col-md-2 qa_rank">
             <div class="votes">{{ question.total_thumb }}<br>votes</div>
-            <div class="answers">{{ question.reply_num }}<br>replies</div>
+            <div {% if question.reply_num == 0 %}
+            class="answers-r"
+            {% else %}
+            class="answers-g"
+            {% endif %} >{{ question.reply_num }}<br>replies</div>
           </div>
           <div class="col-md-10">
             <div class="author">
-              <a href="#">{{ question.author }}</a>
-              <span> </span>
-              <a href="#">{{ question.time }}</a>
+              <a href="#">{{ question.latest_act_user }}</a>
+              <span style="color: #999;">&nbsp;&nbsp;&nbsp;{{ question.latest_act_type }}&nbsp;&nbsp;&nbsp;</span>
+              <a href="#">{{ question.latest_act_time }}</a>
             </div>
             <h2 class="title">
               <a href="/question/{{ question.id }}">
@@ -51,7 +55,8 @@ Tabby
             </ul>
           </div>
         </div>
-      </section>
+        <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2); margin:5px 0 10px;" width="100%" color=#987cb9>
+        </section>
     {% endfor %}
     </div>
   </div>

@@ -5,7 +5,7 @@
     margin: 0 6px;
 }
 
-.answers {
+.answers-r {
     display: inline-block;
     height: 40px;
     width: 45px;
@@ -14,7 +14,17 @@
     color: #fff;
 }
 
+.answers-g {
+    display: inline-block;
+    height: 40px;
+    width: 45px;
+    margin: 0 6px;
+    background-color: #017E66;
+    color: #fff;
+}
+
 .qa_rank div {
+    margin-top: 5px;
     text-align: center;
 }
 
@@ -41,4 +51,8 @@
 .tag-list li {
     list-style: none;
     display: inline-block;
+}
+
+.card-header {
+    margin-bottom: 15px;
 }

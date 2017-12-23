@@ -138,17 +138,15 @@ def home(request):
             q_dict.update(related_reply.aggregate(total_thumb = Sum('thumb_up')))
             if q_dict['total_thumb'] is None:
                 q_dict['total_thumb'] = 0
-            q_dict['time'] = getTimeDiff(question.put_time, timezone.now())
-            q_dict['author'] = question.tuser.user.username
             q_dict['id'] = question.id
             if related_reply.count() > 0:
                 q_dict['latest_act_user'] = related_reply.order_by('-put_time')[0].tuser.user.username
                 q_dict['latest_act_time'] = getTimeDiff(related_reply.order_by('-put_time')[0].put_time, timezone.now())
-                q_dict['latest_act_type'] = 'reply'
+                q_dict['latest_act_type'] = 'replied'
             else:
                 q_dict['latest_act_user'] = question.tuser.user.username
                 q_dict['latest_act_time'] = getTimeDiff(question.put_time, timezone.now())
-                q_dict['latest_act_type'] = 'ask'
+                q_dict['latest_act_type'] = 'asked'
             q_list.append(q_dict)
 
         return render(request, 'tabby/home.html', {'q_list': q_list, 'is_authenticated': is_authenticated})
