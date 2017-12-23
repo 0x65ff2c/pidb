@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^register/$', views.register, name='register'),
     url(r'^new_question/$', views.newQuestion, name='new_question'),
     url(r'^new_answer/$', views.newAnswer, name='new_answer'),
-    url(r'^question/([0-9]+)/$', views.question, name='question')
+    url(r'^question/([0-9]+)/$', views.question, name='question'),
+    url(r'^vote/$', views.vote, name='vote')
 ]

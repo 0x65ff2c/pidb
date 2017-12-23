@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -113,7 +114,7 @@ def question(request, q_id):
         # 4 hate
         if is_authenticated:
             try:
-                vote_relation = request.user.tuser.thumbRelation_set.objects.get(reply=ans)
+                vote_relation = request.user.tuser.thumbrelation_set.get(reply=ans)
                 cur_user_vote = 2 if vote_relation.thumb_flag else 4
             except:
                 cur_user_vote = 0
@@ -167,5 +168,29 @@ def home(request):
 @login_required
 def vote(request):
     if request.method == 'POST':
-        vote_type = request.POST.get('vote_type', None)
-        
+        vote_type = int(request.POST.get('vote_type', None))
+        ans_id = request.POST.get('ans_id', None)
+        cur_ans = Reply.objects.get(id=ans_id)
+        try:
+            vote_relation = request.user.tuser.thumbrelation_set.get(reply=Reply.objects.get(id=int(ans_id)))
+            old_flag = vote_relation.thumb_flag
+            if vote_type == 0:
+                vote_relation.delete()
+                cur_ans.thumb_up = cur_ans.thumb_up - 1 if old_flag else cur_ans.thumb_up + 1
+            else:
+                vote_relation.thumb_flag = True if vote_type == 2 else False
+                if old_flag != vote_relation.thumb_flag:
+                    cur_ans.thumb_up = cur_ans.thumb_up - 2 if old_flag else cur_ans.thumb_up + 2
+                vote_relation.save()
+        except:
+            if vote_type != 0:
+                tem_relation = ThumbRelation(
+                    reply=Reply.objects.get(id=int(ans_id)),
+                    tuser=request.user.tuser,
+                    thumb_flag=True if vote_type == 2 else False)
+                tem_relation.save()
+                cur_ans.thumb_up = cur_ans.thumb_up + 1 if tem_relation.thumb_flag else cur_ans.thumb_up - 1
+        cur_ans.save()
+        return HttpResponse(cur_ans.thumb_up)
+    else:
+        pass
