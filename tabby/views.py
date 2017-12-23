@@ -107,11 +107,25 @@ def question(request, q_id):
     ans_list = []
     for ans in ans_set:
         time_diff = getTimeDiff(ans.put_time, timezone.now())
+        # cur_user_vote: whether current user has voted for this answer
+        # 0 no
+        # 2 like
+        # 4 hate
+        if is_authenticated:
+            try:
+                vote_relation = request.user.tuser.thumbRelation_set.objects.get(reply=ans)
+                cur_user_vote = 2 if vote_relation.thumb_flag else 4
+            except:
+                cur_user_vote = 0
+        else:
+            cur_user_vote = 0
         ans_info = {
+            'id': ans.id,
             'time_diff': time_diff,
             'description': ans.description,
             'author': ans.tuser.user.username,
-            'votes': ans.thumb_up
+            'votes': ans.thumb_up,
+            'cur_user_vote': cur_user_vote
         }
         ans_list.append(ans_info)
     return render(request, 'tabby/question.html', 
@@ -149,3 +163,9 @@ def home(request):
         return render(request, 'tabby/home.html', {'q_list': q_list, 'is_authenticated': is_authenticated})
     else:
         pass	
+
+@login_required
+def vote(request):
+    if request.method == 'POST':
+        vote_type = request.POST.get('vote_type', None)
+        
