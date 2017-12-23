@@ -8,21 +8,20 @@ from django.db.models import *
 import datetime
 
 def getTimeDiff(startTime, endTime):
-	
-	''' returns a string respresenting the difference. eg. "2 days ago""37 minutes ago" '''	
-	
-	diff = endTime - startTime
-	if diff.days >= 1:
-		return '%d day%s ago' % (diff.days, '' if diff.days == 1 else 's')
-	if diff.seconds < 60:
-		return '%d second%s ago' % (diff.seconds, '' if diff.seconds == 1 else 's')
-	if diff.seconds < 3600:
-		minutes = int(diff.seconds / 60)
-		return '%d minute%s ago' % (minutes, '' if minutes == 1 else 's')
-	
-	hours = int(diff.seconds / 3600)
-	return '%d hour%s ago' % (hours, '' if hours == 1 else 's')
-
+    
+    ''' returns a string respresenting the difference. eg. "2 days ago""37 minutes ago" '''	
+    
+    diff = endTime - startTime
+    if diff.days >= 1:
+        return '%d day%s ago' % (diff.days, '' if diff.days == 1 else 's')
+    if diff.seconds < 60:
+        return '%d second%s ago' % (diff.seconds, '' if diff.seconds == 1 else 's')
+    if diff.seconds < 3600:
+        minutes = int(diff.seconds / 60)
+        return '%d minute%s ago' % (minutes, '' if minutes == 1 else 's')
+    
+    hours = int(diff.seconds / 3600)
+    return '%d hour%s ago' % (hours, '' if hours == 1 else 's')
 
 
 def index(request):
@@ -119,27 +118,31 @@ def question(request, q_id):
         'ans_list': ans_list})
 
 def home(request):
-	if request.method == 'GET':
-		q_list = []
-		for question in Question.objects.all():
-			q_dict = {}
-			q_dict['title'] = question.title
-			q_dict['category'] = [Category.objects.all().get(pk=x).name for x in question.category.strip().split(',')]
-			related_reply = question.reply_set.all()
-			q_dict['reply_num'] = related_reply.count()
-			q_dict.update(related_reply.aggregate(total_thumb = Sum('thumb_up')))
-			if q_dict['total_thumb'] is None:
-				q_dict['total_thumb'] = 0
-			if related_reply.count() > 0:
-				q_dict['latest_act_user'] = related_reply.order_by('-put_time')[0].tuser.user.username
-				q_dict['latest_act_time'] = getTimeDiff(related_reply.order_by('-put_time')[0].put_time, timezone.now())
-				q_dict['latest_act_type'] = 'reply'
-			else:
-				q_dict['latest_act_user'] = question.tuser.user.username
-				q_dict['latest_act_time'] = getTimeDiff(question.put_time, timezone.now())
-				q_dict['latest_act_type'] = 'ask'
-			q_list.append(q_dict)
+    if request.method == 'GET':
+        is_authenticated = True if request.user.is_authenticated else False
+        q_list = []
+        for question in Question.objects.all():
+            q_dict = {}
+            q_dict['title'] = question.title
+            q_dict['tags'] = [Category.objects.all().get(pk=x).name for x in question.category.strip().split(',')]
+            related_reply = question.reply_set.all()
+            q_dict['reply_num'] = related_reply.count()
+            q_dict.update(related_reply.aggregate(total_thumb = Sum('thumb_up')))
+            if q_dict['total_thumb'] is None:
+                q_dict['total_thumb'] = 0
+            q_dict['time'] = getTimeDiff(question.put_time, timezone.now())
+            q_dict['author'] = question.tuser.user.username
+            q_dict['id'] = question.id
+            if related_reply.count() > 0:
+                q_dict['latest_act_user'] = related_reply.order_by('-put_time')[0].tuser.user.username
+                q_dict['latest_act_time'] = getTimeDiff(related_reply.order_by('-put_time')[0].put_time, timezone.now())
+                q_dict['latest_act_type'] = 'reply'
+            else:
+                q_dict['latest_act_user'] = question.tuser.user.username
+                q_dict['latest_act_time'] = getTimeDiff(question.put_time, timezone.now())
+                q_dict['latest_act_type'] = 'ask'
+            q_list.append(q_dict)
 
-		return render(request, 'tabby/home.html', {'question_info': q_list})
-	else:
-		pass	
+        return render(request, 'tabby/home.html', {'q_list': q_list, 'is_authenticated': is_authenticated})
+    else:
+        pass	
