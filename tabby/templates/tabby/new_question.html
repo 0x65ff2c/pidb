@@ -14,7 +14,7 @@ New Question
             <input class="form-control" type="text" name="title" placeholder="Title:">
         </div>
         <div class="form-group">
-            <input class="form-control hidden" type="text" name="" id="">
+            <input class="form-control hidden" type="text" name="tags" id="tags">
             <div class="tag-input">
                 <span class="tag selected-tag"></span>
                 <span class="tag selected-tag"></span>
@@ -23,7 +23,7 @@ New Question
                 <span class="tag selected-tag"></span>
                 <input class="tag-text-area" type="text" placeholder="Choose at most 5 tags">
                 <ul class="dropdown-menu">
-                    <li><a class="alt-tag" href="javascript: void(0)">asdfsdf</a></li>
+                    <li><a class="alt-tag" href="javascript: void(0)">C++</a></li>
                     <li><a class="alt-tag" href="javascript: void(0)">asdfsdf</a></li>
                     <li><a class="alt-tag" href="javascript: void(0)">asdfsdf</a></li>
                     <li><a class="alt-tag" href="javascript: void(0)">asdfsdf</a></li>
@@ -31,7 +31,7 @@ New Question
             </div>
             <div class="default-tag" style="display: none;">
                 <ul class="default-taglist">
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">Django</a></li>
                     <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
                     <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
                     <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
@@ -49,7 +49,7 @@ New Question
         <div class="form-group">
             <textarea class="form-control" name="description" rows="15" style="width: 70%;" placeholder="Write description here"></textarea>
         </div>
-        <button type="submit" class="btn btn-default">submit</button>
+        <button type="submit" class="btn btn-default" onclick="return handleTags()">submit</button>
     </form>
 </div>
 {% endblock content %}
@@ -61,6 +61,8 @@ New Question
     for(let i = 0; i < selected_tag.length; ++i) {
         $(selected_tag[i]).hide()
     }
+    changeOffset()
+
     tta.on('input propertychange', function() {
         $('.dropdown-menu').show()
         $('.default-tag').hide()
@@ -74,8 +76,7 @@ New Question
             }
         }
     })
-    changeOffset()
-
+    $('.default-tag').hide()
     $('.alt-tag').on('click', function() {
         if(selected_tag_num >= 5) {
             return
@@ -109,6 +110,15 @@ New Question
         $('.dropdown-menu').css('left', tta.position().left)
         $('.dropdown-menu').hide()
         $('.default-tag').show()
+    }
+
+    function handleTags() {
+        var selected_tag_name = new Array()
+        for(let i = 0; i < selected_tag_num; ++i) {
+            selected_tag_name[i] = $(selected_tag[i]).text()
+        }
+        $('#tags').val(selected_tag_name.join())
+        return true
     }
 </script>
 {% endblock scripts %}

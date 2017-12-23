@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -63,16 +63,24 @@ def register(request):
             return render(request, 'tabby/userExist.html', {})
 
 def newQuestion(request):
+    """
+    to make things easier, the browser tends to get tag name instead of tag id
+    """
     if request.method == 'POST':
         if request.user.is_authenticated:
             title = request.POST.get('title', None)
-            category = request.POST.get('category', None)
+            tags = request.POST.get('tags', None)
+            tag_list = tags.split(',')
+            tag_id_list = []
+            for tag in tag_list:
+                tag_id_list.append(str(Category.objects.get(name=tag).id))
+            category = ','.join(tag_id_list)
             description = request.POST.get('description', None)
             put_time = timezone.now()
             tuser = request.user.tuser
             new_q = Question(tuser=tuser, title=title, category=category, description=description, put_time=put_time)
             new_q.save()
-            return render(request, 'tabby/profile.html', {})
+            return redirect('/')
         else:
             return render(request, 'tabby/error.html', {'err_msg': 'not login...'})
     else:
