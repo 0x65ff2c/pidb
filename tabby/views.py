@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .models import *
 from django.db.models import *
@@ -23,16 +24,14 @@ def getTimeDiff(startTime, endTime):
     hours = int(diff.seconds / 3600)
     return '%d hour%s ago' % (hours, '' if hours == 1 else 's')
 
-
-def index(request):
-    question = {
-        'votes': '2333', 'answers': '10', 'author': 'carl', 'time': '1h ago',
-        'title': 'some title', 'tags': ['tag1', 'tag2']}
-    test = [question, question]
-    return render(request, 'tabby/index.html', {'q_list': test})
+@login_required
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
 
 def login(request):
     if request.method == 'POST':
+        next_url = request.POST.get('next_url', '/')
         name = request.POST.get('user', None)
         password = request.POST.get('password', None)
         user = authenticate(username=name, password=password)
@@ -42,11 +41,12 @@ def login(request):
             q_name_list = []
             for question in question_list:
                 q_name_list.append(question.title)
-            return render(request, 'tabby/profile.html', {'questions': q_name_list})
+            return redirect(next_url)
         else:
             return render(request, 'tabby/error.html', {'err_msg': 'incorrect username or password.'})
     else:
-        return render(request, 'tabby/login.html', {})
+        next_url = request.GET.get('next', '/')
+        return render(request, 'tabby/login.html', {'next_url': next_url})
 
 def register(request):
     if request.method == 'POST':
@@ -60,31 +60,29 @@ def register(request):
             new_tuser.save()
             return render(request, 'tabby/profile.html', {})
         else:
-            return render(request, 'tabby/userExist.html', {})
+            return render(request, 'tabby/error.html', {'err_msg': 'user exist'})
 
+@login_required
 def newQuestion(request):
     """
     to make things easier, the browser tends to get tag name instead of tag id
     """
     if request.method == 'POST':
-        if request.user.is_authenticated:
-            title = request.POST.get('title', None)
-            tags = request.POST.get('tags', None)
-            tag_list = tags.split(',')
-            tag_id_list = []
-            for tag in tag_list:
-                tag_id_list.append(str(Category.objects.get(name=tag).id))
-            category = ','.join(tag_id_list)
-            description = request.POST.get('description', None)
-            put_time = timezone.now()
-            tuser = request.user.tuser
-            new_q = Question(tuser=tuser, title=title, category=category, description=description, put_time=put_time)
-            new_q.save()
-            return redirect('/')
-        else:
-            return render(request, 'tabby/error.html', {'err_msg': 'not login...'})
+        title = request.POST.get('title', None)
+        tags = request.POST.get('tags', None)
+        tag_list = tags.split(',')
+        tag_id_list = []
+        for tag in tag_list:
+            tag_id_list.append(str(Category.objects.get(name=tag).id))
+        category = ','.join(tag_id_list)
+        description = request.POST.get('description', None)
+        put_time = timezone.now()
+        tuser = request.user.tuser
+        new_q = Question(tuser=tuser, title=title, category=category, description=description, put_time=put_time)
+        new_q.save()
+        return redirect('/')
     else:
-        return render(request, 'tabby/new_question.html', {})
+        return render(request, 'tabby/new_question.html', {'is_authenticated': True})
 
 def newAnswer(request):
     if request.method == 'POST':
@@ -148,7 +146,6 @@ def home(request):
                 q_dict['latest_act_time'] = getTimeDiff(question.put_time, timezone.now())
                 q_dict['latest_act_type'] = 'asked'
             q_list.append(q_dict)
-
         return render(request, 'tabby/home.html', {'q_list': q_list, 'is_authenticated': is_authenticated})
     else:
         pass	
