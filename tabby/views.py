@@ -21,7 +21,6 @@ def getTimeDiff(startTime, endTime):
     if diff.seconds < 3600:
         minutes = int(diff.seconds / 60)
         return '%d minute%s ago' % (minutes, '' if minutes == 1 else 's')
-    
     hours = int(diff.seconds / 3600)
     return '%d hour%s ago' % (hours, '' if hours == 1 else 's')
 
