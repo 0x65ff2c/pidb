@@ -5,7 +5,7 @@
     margin: 0 6px;
 }
 
-.answers {
+.answers-r {
     display: inline-block;
     height: 40px;
     width: 45px;
@@ -14,7 +14,17 @@
     color: #fff;
 }
 
+.answers-g {
+    display: inline-block;
+    height: 40px;
+    width: 45px;
+    margin: 0 6px;
+    background-color: #017E66;
+    color: #fff;
+}
+
 .qa_rank div {
+    margin-top: 5px;
     text-align: center;
 }
 
@@ -43,15 +53,6 @@
     display: inline-block;
 }
 
-.tag {
-    margin-left: 3px;
-    display: inline-block;
-    padding: 0 6px;
-    color: #017E66;
-    background-color: rgba(1,126,102,0.08);
-    height: 22px;
-    line-height: 22px;
-    font-weight: normal;
-    font-size: 13px;
-    text-align: center;
+.card-header {
+    margin-bottom: 15px;
 }

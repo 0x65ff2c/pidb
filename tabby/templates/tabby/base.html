@@ -28,7 +28,8 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
         {% if is_authenticated %}
-          Welcome
+          <li>Welcome</li>
+          <li><a href="/logout">Sign out</a></li>
         {% else %}
           <li><a href="/login">Sign up/ Sign in</a></li>
         {% endif %}

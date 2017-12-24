@@ -13,7 +13,15 @@
     color: #999;
 }
 
+.ans-info a {
+    color: #999;
+}
+
 .ans-author {
-    text-align: right;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.ans-author a {
     color: #017E66;
 }

@@ -1,24 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    <form action="{% url 'tabby:new_question' %}" method="post">
+{% extends "tabby/base.html" %}
+{% block title %}
+New Question
+{% endblock title %}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "css/tag.css" %}">
+{% endblock css %}
+{% block content %}
+<div class="container">
+    <form action="{% url 'tabby:new_question' %}" method="POST">
     {% csrf_token %}
-        title:
-        <input type="text" name="title">
-        <br>
-        category:
-        <input type="number" name="category">
-        <br>
-        description:
-        <input type="text" name="description">
-        <br>
-        <input type="submit" value="submit">
+        <div class="form-group">
+            <input class="form-control" type="text" name="title" placeholder="Title:">
+        </div>
+        <div class="form-group">
+            <input class="form-control hidden" type="text" name="tags" id="tags">
+            <div class="tag-input">
+                <span class="tag selected-tag"></span>
+                <span class="tag selected-tag"></span>
+                <span class="tag selected-tag"></span>
+                <span class="tag selected-tag"></span>
+                <span class="tag selected-tag"></span>
+                <input class="tag-text-area" type="text" placeholder="Choose at most 5 tags">
+                <ul class="dropdown-menu">
+                    <li><a class="alt-tag" href="javascript: void(0)">C++</a></li>
+                    <li><a class="alt-tag" href="javascript: void(0)">asdfsdf</a></li>
+                    <li><a class="alt-tag" href="javascript: void(0)">asdfsdf</a></li>
+                    <li><a class="alt-tag" href="javascript: void(0)">asdfsdf</a></li>
+                </ul>
+            </div>
+            <div class="default-tag" style="display: none;">
+                <ul class="default-taglist">
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">Django</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="form-group">
+            <textarea class="form-control" name="description" rows="15" style="width: 70%;" placeholder="Write description here"></textarea>
+        </div>
+        <button type="submit" class="btn btn-default" onclick="return handleTags()">submit</button>
     </form>
-</body>
-</html>
+</div>
+{% endblock content %}
+{% block scripts %}
+<script>
+    var selected_tag = $('.selected-tag').toArray()
+    var tta = $('.tag-text-area')
+    var selected_tag_num = 0
+    for(let i = 0; i < selected_tag.length; ++i) {
+        $(selected_tag[i]).hide()
+    }
+    changeOffset()
+
+    tta.on('input propertychange', function() {
+        $('.dropdown-menu').show()
+        $('.default-tag').hide()
+    })
+    tta.keydown(function(e) {
+        if(e.keyCode == 8) {
+            if(tta.val() == '') {
+                --selected_tag_num
+                $(selected_tag[selected_tag_num]).hide()
+                changeOffset()
+            }
+        }
+    })
+    $('.default-tag').hide()
+    $('.alt-tag').on('click', function() {
+        if(selected_tag_num >= 5) {
+            return
+        }
+        tta.val('')
+        $(selected_tag[selected_tag_num]).text($(this).text())
+        $(selected_tag[selected_tag_num]).show()
+        ++selected_tag_num
+        changeOffset()
+    })
+    $('.dropdown-menu').on('click', function(e) {
+        e.stopPropagation()
+    })
+    $('.tag-input').on('click', function(e) {
+        if(tta.val().length == 0) {
+            $('.default-tag').show()
+        }
+        $(document).one('click', function() {
+            $('.default-tag').hide()
+            $('.dropdown-menu').hide()
+            tta.val('')
+        })
+        e.stopPropagation()
+    })
+    $('.default-tag').on('click', function(e) {
+        e.stopPropagation()
+    })
+
+    function changeOffset() {
+        $('.default-tag').css('left', tta.offset().left)
+        $('.dropdown-menu').css('left', tta.position().left)
+        $('.dropdown-menu').hide()
+        $('.default-tag').show()
+    }
+
+    function handleTags() {
+        var selected_tag_name = new Array()
+        for(let i = 0; i < selected_tag_num; ++i) {
+            selected_tag_name[i] = $(selected_tag[i]).text()
+        }
+        $('#tags').val(selected_tag_name.join())
+        return true
+    }
+</script>
+{% endblock scripts %}
