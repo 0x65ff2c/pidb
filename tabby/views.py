@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.http import HttpResponseRedirect
 from .models import *
 from django.db.models import *
 import datetime
@@ -88,8 +89,9 @@ def newAnswer(request):
     if request.method == 'POST':
         q_id = request.POST.get('q_id', None)
         description = request.POST.get('ans', None)
-
-        return render(request, 'tabby/new_answer.html', {})
+        reply = Reply(put_time=timezone.now(), thumb_up=0, description=description, question=Question.objects.all().get(pk=q_id), tuser=request.user.tuser)
+        reply.save()		
+        return HttpResponseRedirect('../question/' + str(q_id))
     else:
         return render(request, 'tabby/error.html', {'err_msg': 'method should be Post'})
 
@@ -133,7 +135,7 @@ def question(request, q_id):
         'q_id': q_id,
         'title': title,
         'description': description,
-        'tags': [tag],
+        'tags': [Category.objects.all().get(pk=x).name for x in tag.strip().split(',')],
         'q_author': q_author,
         'ans_list': ans_list})
 
@@ -163,6 +165,42 @@ def home(request):
         return render(request, 'tabby/home.html', {'q_list': q_list, 'is_authenticated': is_authenticated})
     else:
         pass	
+
+def profile(request, username):
+	if request.method == 'GET':
+		q_list = []
+		user = Tuser.objects.all().get(username=username)
+
+		for reply in user.reply_set.all():
+			reply_info = {}
+			reply_info['reply_id'] = reply.id
+			reply_info['reply_content'] = reply.description
+			reply_info['question_id'] = reply.question.id
+			reply_info['question_title'] = reply.question.title
+			reply_info['type'] = 'reply'
+			q_list.append(reply_info)
+
+		for question in user.question_set.all():
+			question_info = {}
+			question_info['question_id'] = question.id
+			question_info['question_title'] = question.title
+			question_info['top_answer'] = question.reply_set.all().order_by('-thumb_up')[0].description
+			question_info['type'] = 'question'
+			q_list.append(question_info)
+
+		for thumb_entry in user.thumbrelation_set.all():
+			t_info = {}
+			related_question = thumb_entry.reply.question
+			t_info['question_id'] = related_question.id
+			t_info['question_title'] = related_question.title
+			t_info['reply_id'] = thumb_entry.reply.id
+			t_info['reply_content'] = thumb_entry.reply.description
+			t_info['type'] = 'thumb'
+			q_list.append(t_info)
+
+		return render(request, 'tabby/profile.html', {'user_latest_action': q_list})
+	else:
+		pass
 
 @login_required
 def vote(request):
