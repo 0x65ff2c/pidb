@@ -83,7 +83,12 @@ def newQuestion(request):
         new_q.save()
         return redirect('/')
     else:
-        return render(request, 'tabby/new_question.html', {'is_authenticated': True})
+        all_taglist = ['C++', 'Django']
+        default_taglist = ['Django']
+        return render(request, 'tabby/new_question.html',
+            {'is_authenticated': True,
+            'default_taglist': default_taglist,
+            'all_taglist': all_taglist})
 
 def newAnswer(request):
     if request.method == 'POST':
