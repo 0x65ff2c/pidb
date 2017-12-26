@@ -26,3 +26,4 @@ class ThumbRelation(models.Model):
 
 class Category(models.Model):
 	name = models.CharField(max_length=200)
+	popularity = models.IntegerField(default=0)
