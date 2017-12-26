@@ -217,7 +217,7 @@ def profile(request, user_name):
 		return render(request, 'tabby/profile.html', {'user_name': user.user.username, 'user_latest_action': q_list, 'head_image': head_image_name})
 	else:
 		user.headimg = request.FILES['head_image']
-		user.headimg.name = user.user.username + str(timezone.now())
+		user.headimg.name = user.user.username + '_' + str(timezone.now()) + '.jpg'
 		user.save()
 		return redirect(request.path)
 
