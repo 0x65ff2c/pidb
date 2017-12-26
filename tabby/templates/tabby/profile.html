@@ -7,14 +7,11 @@
     <title>Welcome</title>
 </head>
 <body>
-    hello
-    <h1>QUESTIONS</h1>
-    {% for question in questions %}
-    <p>{{ question }}</p>
+    profile
+    <h1>ENTRIES</h1>
+    {% for entry in user_latest_action %}
+    <p>type: {{ entry.type }}</p>
     {% endfor %}
-    <h1>ANSWERS</h1>
-    {% for answer in answers %}
-    <p>answer</p>
-    {% endfor %}
-</body>
+	<p> {{err_msg}} </p>
+   </body>
 </html>
