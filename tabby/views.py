@@ -8,7 +8,9 @@ from django.utils import timezone
 from django.http import HttpResponseRedirect
 from .models import *
 from django.db.models import *
+from django.conf import settings
 import datetime
+import os
 
 def getTimeDiff(startTime, endTime):
 	
@@ -180,13 +182,12 @@ def home(request):
 		pass	
 
 def profile(request, user_name):
+	try:
+		user = User.objects.all().get(username=user_name).tuser
+	except:
+		return render(request, 'tabby/profile.html', {'err_msg': 'No such user!'})
 	if request.method == 'GET':
 		q_list = []
-		try:
-			user = User.objects.all().get(username=user_name).tuser
-		except:
-			return render(request, 'tabby/profile.html', {'err_msg': 'No such user!'})
-
 		for reply in user.reply_set.all():
 			reply_info = {}
 			reply_info['reply_id'] = reply.id
@@ -195,7 +196,6 @@ def profile(request, user_name):
 			reply_info['question_title'] = reply.question.title
 			reply_info['type'] = 'reply'
 			q_list.append(reply_info)
-
 		for question in user.question_set.all():
 			question_info = {}
 			question_info['question_id'] = question.id
@@ -204,7 +204,6 @@ def profile(request, user_name):
 			question_info['top_answer'] = reply_set.order_by('-thumb_up')[0].description if reply_set.count() > 0 else None
 			question_info['type'] = 'question'
 			q_list.append(question_info)
-
 		for thumb_entry in user.thumbrelation_set.all():
 			t_info = {}
 			related_question = thumb_entry.reply.question
@@ -214,10 +213,13 @@ def profile(request, user_name):
 			t_info['reply_content'] = thumb_entry.reply.description
 			t_info['type'] = 'thumb'
 			q_list.append(t_info)
-
-		return render(request, 'tabby/profile.html', {'user_latest_action': q_list})
+		head_image_name = 'img/default.png' if user.headimg.name is None else user.headimg.name
+		return render(request, 'tabby/profile.html', {'user_name': user.user.username, 'user_latest_action': q_list, 'head_image': head_image_name})
 	else:
-		pass
+		user.headimg = request.FILES['head_image']
+		user.headimg.name = user.user.username + str(timezone.now())
+		user.save()
+		return redirect(request.path)
 
 @login_required
 def vote(request):

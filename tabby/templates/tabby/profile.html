@@ -1,17 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Welcome</title>
-</head>
-<body>
-    profile
-    <h1>ENTRIES</h1>
-    {% for entry in user_latest_action %}
-    <p>type: {{ entry.type }}</p>
-    {% endfor %}
-	<p> {{err_msg}} </p>
-   </body>
-</html>
+{% extends "tabby/base.html" %}
+{% block title %}
+   Profile
+{% endblock title %}
+{% block css %}
+
+{% endblock css %}
+{% block content %}
+{% load static %}
+<div class="container">
+    <p> {{err_msg}} </p>
+	<p> {{head_image}} </p>	
+	<form action="/profile/{{ user_name }}/" enctype="multipart/form-data" method="post">{% csrf_token %}
+		
+	<fieldset>
+		
+	<input type="file" name="head_image" />
+		
+	<input type="submit" value="submit"/>
+		
+	</fieldset>
+		
+	</form>
+	<img src="/static/{{ head_image | safe }}" /> 
+</div>
+{% endblock content %}

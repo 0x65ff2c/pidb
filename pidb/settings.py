@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+MEDIA_ROOT = BASE_DIR + '/tabby/static/'
+MEDIA_URL = os.path.join(BASE_DIR, 'tabby/static/').replace('\\','/')
 
 # Application definition
 
