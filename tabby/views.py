@@ -186,7 +186,6 @@ def home(request):
         pass	
 
 def profile(request, user_name):
-<<<<<<< HEAD
 	try:
 		user = User.objects.all().get(username=user_name).tuser
 	except:
