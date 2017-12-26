@@ -37,9 +37,9 @@ Tabby
           </div>
           <div class="col-md-10">
             <div class="author">
-              <a href="#">{{ question.latest_act_user }}</a>
+              <a href="/profile/{{ question.latest_act_user }}">{{ question.latest_act_user }}</a>
               <span style="color: #999;">&nbsp;&nbsp;&nbsp;{{ question.latest_act_type }}&nbsp;&nbsp;&nbsp;</span>
-              <a href="#">{{ question.latest_act_time }}</a>
+              <a href="/question/{{ question.id }}">{{ question.latest_act_time }}</a>
             </div>
             <h2 class="title">
               <a href="/question/{{ question.id }}">

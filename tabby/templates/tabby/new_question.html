@@ -59,7 +59,7 @@ New Question
         for(let i = 0; i < all_taglist.length; ++i) {
             if(all_taglist[i].indexOf(cur_str) == 0) {
                 $('.dropdown-menu').append(
-                    '<li><a class="alt-tag" href="javascript: void(0)">'
+                    '<li onclick="addTag(\''+all_taglist[i]+'\')"><a class="alt-tag" href="javascript: void(0)">'
                         + all_taglist[i]
                         + '</a></li>'
                 )
@@ -82,16 +82,7 @@ New Question
         }
     })
     $('.default-tag').hide()
-    $('.alt-tag').on('click', function() {
-        if(selected_tag_num >= 5) {
-            return
-        }
-        tta.val('')
-        $(selected_tag[selected_tag_num]).text($(this).text())
-        $(selected_tag[selected_tag_num]).show()
-        ++selected_tag_num
-        changeOffset()
-    })
+    $('.alt-tag').on('click', addTag)
     $('.dropdown-menu').on('click', function(e) {
         e.stopPropagation()
     })
@@ -109,6 +100,17 @@ New Question
     $('.default-tag').on('click', function(e) {
         e.stopPropagation()
     })
+
+    function addTag(val) {
+        if(selected_tag_num >= 5) {
+            return
+        }
+        tta.val('')
+        $(selected_tag[selected_tag_num]).text($(this).text()||val)
+        $(selected_tag[selected_tag_num]).show()
+        ++selected_tag_num
+        changeOffset()
+    }
 
     function changeOffset() {
         $('.default-tag').css('left', tta.offset().left)

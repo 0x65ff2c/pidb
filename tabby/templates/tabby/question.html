@@ -22,7 +22,7 @@ Tabby
                 {% endfor %}
                 </ul>
                 <div class="q-author">
-                    <a href="#"><strong>{{ q_author }}</strong></a>
+                    <a href="/profile/{{ q_author }}"><strong>{{ q_author }}</strong></a>
                     1h ago
                 </div>
             </div>
@@ -37,7 +37,7 @@ Tabby
         {% for ans in ans_list %}
             <article class="ans-item">
                 <div class="ans-author">
-                    <a href="#"><strong>{{ ans.author }}</strong></a>
+                    <a href="/profile/{{ ans.author }}"><strong>{{ ans.author }}</strong></a>
                 </div>
                 <p class="card-text">{{ ans.description }}</p>
                 <div class="row">
