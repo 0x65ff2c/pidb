@@ -22,7 +22,7 @@ Tabby
                 {% endfor %}
                 </ul>
                 <div class="q-author">
-                    <a href="#"><strong>{{ q_author }}</strong></a>
+                    <a href="/profile/{{ q_author }}"><strong>{{ q_author }}</strong></a>
                     1h ago
                 </div>
             </div>
@@ -37,7 +37,7 @@ Tabby
         {% for ans in ans_list %}
             <article class="ans-item">
                 <div class="ans-author">
-                    <a href="#"><strong>{{ ans.author }}</strong></a>
+                    <a href="/profile/{{ ans.author }}"><strong>{{ ans.author }}</strong></a>
                 </div>
                 <p class="card-text">{{ ans.description }}</p>
                 <div class="row">
@@ -85,19 +85,18 @@ Tabby
 {% block scripts %}
 <script>
     function getCookie(name) {  
-        var cookieValue = null;  
+        var cookieValue = null
         if (document.cookie && document.cookie != '') {  
-            var cookies = document.cookie.split(';');  
+            var cookies = document.cookie.split(';')
             for (var i = 0; i < cookies.length; i++) {  
-                var cookie = jQuery.trim(cookies[i]);  
-                // Does this cookie string begin with the name we want?  
+                var cookie = jQuery.trim(cookies[i])
                 if (cookie.substring(0, name.length + 1) == (name + '=')) {  
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));  
-                    break;  
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+                    break
                 }  
             }  
         }  
-        return cookieValue;  
+        return cookieValue
     }
     var csrftoken = getCookie('csrftoken')
     function csrfSafeMethod(method) {

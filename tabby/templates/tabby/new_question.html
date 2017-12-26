@@ -15,7 +15,7 @@ New Question
         </div>
         <div class="form-group">
             <input class="form-control hidden" type="text" name="tags" id="tags">
-            <div class="tag-input">
+            <div class="tag-input" data-tag="{{ all_taglist|safe }}">
                 <span class="tag selected-tag"></span>
                 <span class="tag selected-tag"></span>
                 <span class="tag selected-tag"></span>
@@ -23,26 +23,13 @@ New Question
                 <span class="tag selected-tag"></span>
                 <input class="tag-text-area" type="text" placeholder="Choose at most 5 tags">
                 <ul class="dropdown-menu">
-                    <li><a class="alt-tag" href="javascript: void(0)">C++</a></li>
-                    <li><a class="alt-tag" href="javascript: void(0)">asdfsdf</a></li>
-                    <li><a class="alt-tag" href="javascript: void(0)">asdfsdf</a></li>
-                    <li><a class="alt-tag" href="javascript: void(0)">asdfsdf</a></li>
                 </ul>
             </div>
             <div class="default-tag" style="display: none;">
                 <ul class="default-taglist">
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">Django</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
-                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">asdfn</a></li>
+                {% for dt in default_taglist %}
+                    <li class="tag"><a class="alt-tag" href="javascript: void(0)">{{ dt }}</a></li>
+                {% endfor %}
                 </ul>
             </div>
         </div>
@@ -55,6 +42,8 @@ New Question
 {% endblock content %}
 {% block scripts %}
 <script>
+    var all_taglist = $('.tag-input').data('tag')
+    all_taglist = all_taglist.substr(2, all_taglist.length - 4).split("', '")
     var selected_tag = $('.selected-tag').toArray()
     var tta = $('.tag-text-area')
     var selected_tag_num = 0
@@ -64,6 +53,22 @@ New Question
     changeOffset()
 
     tta.on('input propertychange', function() {
+        $('.dropdown-menu').text('')
+        var cur_str = $(this).val()
+        var count = 0
+        for(let i = 0; i < all_taglist.length; ++i) {
+            if(all_taglist[i].indexOf(cur_str) == 0) {
+                $('.dropdown-menu').append(
+                    '<li onclick="addTag(\''+all_taglist[i]+'\')"><a class="alt-tag" href="javascript: void(0)">'
+                        + all_taglist[i]
+                        + '</a></li>'
+                )
+                ++count
+                if(count > 5) {
+                    break;
+                }
+            }
+        }
         $('.dropdown-menu').show()
         $('.default-tag').hide()
     })
@@ -77,16 +82,7 @@ New Question
         }
     })
     $('.default-tag').hide()
-    $('.alt-tag').on('click', function() {
-        if(selected_tag_num >= 5) {
-            return
-        }
-        tta.val('')
-        $(selected_tag[selected_tag_num]).text($(this).text())
-        $(selected_tag[selected_tag_num]).show()
-        ++selected_tag_num
-        changeOffset()
-    })
+    $('.alt-tag').on('click', addTag)
     $('.dropdown-menu').on('click', function(e) {
         e.stopPropagation()
     })
@@ -104,6 +100,17 @@ New Question
     $('.default-tag').on('click', function(e) {
         e.stopPropagation()
     })
+
+    function addTag(val) {
+        if(selected_tag_num >= 5) {
+            return
+        }
+        tta.val('')
+        $(selected_tag[selected_tag_num]).text($(this).text()||val)
+        $(selected_tag[selected_tag_num]).show()
+        ++selected_tag_num
+        changeOffset()
+    }
 
     function changeOffset() {
         $('.default-tag').css('left', tta.offset().left)
