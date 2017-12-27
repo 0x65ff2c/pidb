@@ -30,3 +30,4 @@ class Category(models.Model):
 	name = models.CharField(max_length=200)
 	popularity = models.IntegerField(default=0)
 	description = models.TextField(null=True)
+	base = models.ForeignKey('self', null=True)
