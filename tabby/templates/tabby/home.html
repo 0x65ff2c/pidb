@@ -11,15 +11,15 @@ Tabby
 <div class="container">
   <div class="card">
     <div class="card-header">
-      <ul class="nav nav-tabs card-header-tabs">
+      <ul class="nav nav-tabs card-header-tabs" id="nav" data-order={{ order }}>
         <li class="nav-item active">
-          <a class="nav-link" href="#">All</a>
+          <a class="nav-link" href="/?order=0">All</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">sth</a>
+          <a class="nav-link" href="/?order=1">Most Answered</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">sth</a>
+          <a class="nav-link" href="/?order=2">Most Voted</a>
         </li>
       </ul>
     </div>
@@ -62,3 +62,9 @@ Tabby
   </div>
 </div>
 {% endblock content %}
+{% block scripts %}
+<script>
+  $('#nav li').removeClass('active')
+  $('#nav li').eq($('#nav').data('order')).addClass('active')
+</script>
+{% endblock scripts %}
