@@ -1,0 +1,21 @@
+p { word-wrap:break-word; }
+
+section {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.question p {
+    color: #999;
+}
+
+.user img {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: red;
+}
+
+.user div {
+    display: inline-block;
+}

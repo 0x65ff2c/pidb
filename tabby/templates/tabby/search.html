@@ -1,0 +1,55 @@
+{% extends "tabby/base.html" %}
+{% block title %}
+Result
+{% endblock title %}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "css/search.css" %}">
+{% endblock css %}
+{% block content %}
+<div class="container">
+    <ul class="nav nav-tabs" id="nav">
+        <li class="active"><a href="#">All</a></li>
+        <li><a href="#">Questions</a></li>
+        <li><a href="#">Tags</a></li>
+        <li><a href="#">Users</a></li>
+    </ul>
+    <div>
+        <section class="question">
+            <h4><a href="#">asdafnoasnfa</a></h2>
+            <p>nfadosfd;sfoinads;ofinasd;fonias;odfnassnf;os gnnnnnnnnnnggggggggggggggggggggggasdfasdfa</p>
+            <p>0vote&nbsp;&nbsp;&nbsp;&nbsp;0answer</p>
+        </section>
+        <section class="tag">
+            <span class="label label-success">tag</span><a href="#">asdfas</a>
+        </section>
+        <section class="user">
+            <img src="#" alt="asdfa">
+            <div>
+                <a href="#">testuser</a>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock content %}
+{% block scripts %}
+<script>
+    $('#nav a').on('click', function() {
+        var index = $('#nav a').index($(this))
+        $('#nav li').removeClass('active')
+        $('#nav li').eq(index).addClass('active')
+        var section_type = ['.question', '.tag', '.user']
+        if(index == 0) {
+            for(let i = 0; i < section_type.length; ++i) {
+                $(section_type[i]).show()
+            }
+        }
+        else {
+            for(let i = 0; i < section_type.length; ++i) {
+                $(section_type[i]).hide()
+            }
+            $(section_type[index - 1]).show()
+        }
+    })
+</script>
+{% endblock scripts %}

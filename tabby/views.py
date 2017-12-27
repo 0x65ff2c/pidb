@@ -254,3 +254,6 @@ def vote(request):
         return HttpResponse(cur_ans.thumb_up)
     else:
         pass
+
+def search(request):
+    return render(request, 'tabby/search.html', {})
