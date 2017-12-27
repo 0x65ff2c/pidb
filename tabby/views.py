@@ -300,7 +300,6 @@ def search(request):
 		for user in users:
 			user_info = {}
 			user_info['type'] = 'user'
-			user_info['user_id'] = user.id
 			user_info['user_name'] = stronger(user.user.username, keyword)
 			user_info['user_description'] = spaceless(stronger(user.description, keyword)) 
 			user_info['user_head_image'] = 'img/default.png' if user.headimg.name is None else user.headimg.name
@@ -313,12 +312,15 @@ def search(request):
 			tag_info['tag_description'] = tag.description
 			hits.append(tag_info)
 		for question in Question.objects.all():
+			reply_set = question.reply_set.all()	
 			title = stronger(question.title, keyword)
 			parser = contentParser()
 			parser.feed(parser.unescape(question.description))
 			desc = spaceless(stronger(parser.content, keyword))
 			question_info = {}
-			question_info['type'] = 'question'
+			question_info['type'] = 'question'	
+			question_info.update(reply_set.aggregate(total_vote = Sum('thumb_up')))
+			question_info['total_answer'] = reply_set.count()
 			if title.find(keyword) != -1 or desc.find(keyword) != -1:
 				question_info['question_id'] = question.id
 				question_info['question_title'] = title
@@ -339,3 +341,6 @@ def search(request):
 	else:
 		pass
 
+def temp(request):
+	if request.method == 'GET':
+		return render(request, 'tabby/temp.html')

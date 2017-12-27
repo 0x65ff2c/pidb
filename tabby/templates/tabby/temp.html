@@ -1,0 +1,21 @@
+{% extends "tabby/base.html" %}
+{% block title %}
+   Temp
+{% endblock title %}
+{% block css %}
+
+{% endblock css %}
+{% block content %}
+{% load static %}
+<div class="container">
+   	<form action="/search/" method="get">{% csrf_token %}
+		
+		
+	<input type="text" name="keyword" />
+		
+	<input type="submit" value="submit"/>
+		
+		
+	</form>
+</div>
+{% endblock content %}
