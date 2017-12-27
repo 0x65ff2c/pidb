@@ -37,6 +37,7 @@ Tabby
         <div class="card-body">
         {% for ans in ans_list %}
             <article class="ans-item">
+                <a name="{{ ans.id }}"></a>
                 <div class="ans-author">
                     <div class="ans-head-image"><img src="/static/{{ans.head_image}}" /></div>
                     <div class="ans-author-name"><a href="/profile/{{ ans.author }}"><strong>{{ ans.author }}</strong></a></div>

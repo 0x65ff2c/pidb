@@ -11,7 +11,9 @@ from django.db.models import *
 from django.conf import settings
 import datetime
 import os
+import numpy as np
 from html.parser import HTMLParser
+from itertools import chain
 
 def getTimeDiff(startTime, endTime):
 	
@@ -129,6 +131,7 @@ def newQuestion(request):
 		default_taglist = topKCategory(20)
 		return render(request, 'tabby/new_question.html',
 			{'is_authenticated': True,
+			'login_username': request.user.username,
 			'default_taglist': default_taglist,
 			'all_taglist': all_taglist})
 
@@ -215,12 +218,14 @@ def intervalActive(user, startTime, endTime):
 	return answer + reply
 
 def profile(request, user_name):
+	is_authenticated = True if request.user.is_authenticated else False
+	login_username = request.user.username if request.user.is_authenticated else ''
 	try:
 		user = User.objects.all().get(username=user_name).tuser
 	except:
 		return render(request, 'tabby/profile.html', {'err_msg': 'No such user!'})
 	if request.method == 'GET':
-		q_list = []
+		ans_list = []
 		for reply in user.reply_set.all():
 			reply_info = {}
 			reply_info['reply_id'] = reply.id
@@ -228,7 +233,8 @@ def profile(request, user_name):
 			reply_info['question_id'] = reply.question.id
 			reply_info['question_title'] = reply.question.title
 			reply_info['type'] = 'reply'
-			q_list.append(reply_info)
+			ans_list.append(reply_info)
+		q_list = []
 		for question in user.question_set.all():
 			question_info = {}
 			question_info['question_id'] = question.id
@@ -237,6 +243,7 @@ def profile(request, user_name):
 			question_info['top_answer'] = reply_set.order_by('-thumb_up')[0].description if reply_set.count() > 0 else None
 			question_info['type'] = 'question'
 			q_list.append(question_info)
+		t_list = []
 		for thumb_entry in user.thumbrelation_set.all():
 			t_info = {}
 			related_question = thumb_entry.reply.question
@@ -245,32 +252,76 @@ def profile(request, user_name):
 			t_info['reply_id'] = thumb_entry.reply.id
 			t_info['reply_content'] = thumb_entry.reply.description
 			t_info['type'] = 'thumb'
-			q_list.append(t_info)
+			t_list.append(t_info)
 		head_image_name = 'img/default.png' if user.headimg.name is None else user.headimg.name
-		#chart info
 		now = timezone.now()
-		active_day = [intervalActive(x, x + datetime.timedelta(hours=1)) for x in range(now - datetime.timedelta(hours=24), now, datetime.timedelta(hours=1))]
-		active_week = [intervalActive(x, x + datetime.timedelta(days=1)) for x in range(now - datetime.timedelta(days=7), now, datetime.timedelta(days=1))]
-		active_month = [intervalActive(x, x + datetime.timedelta(days=1)) for x in range(now - datetime.timedelta(days=30), now, datetime.timedelta(days=1))]
-		hour_24 = [str(x.hour) + '时' for x in range(now - datetime.timedelta(hours=24), now, datetime.timedelta(hours=1))]
-		week_7 = [str(x.month) + '月' + str(x.day) + '日' for x in range(now - datetime.timedelta(days=7), now, datetime.timedelta(days=1))]
-		month_30 = [str(x.month) + '月' + str(x.day) + '日' for x in range(now - datetime.timedelta(days=30), now, datetime.timedelta(days=1))]
-		return render(request, 'tabby/temp.html', {
-			'user_name': user.user.username, 
-			'user_latest_action': q_list, 
+		active_day = [intervalActive(user, x, x + datetime.timedelta(hours=1)) for x in [now - datetime.timedelta(hours=y) for y in range(24, 0, -1)]]
+		active_week = [intervalActive(user, x, x + datetime.timedelta(days=1)) for x in [now - datetime.timedelta(days=y) for y in range(7, 0, -1)]]
+		active_month = [intervalActive(user, x, x + datetime.timedelta(days=1)) for x in [now - datetime.timedelta(days=y) for y in range(30, 0, -1)]]
+		hour_24 = [str(x.hour) + '时' for x in [now - datetime.timedelta(hours=y) for y in range(24, 0, -1)]]
+		week_7 = [str(x.month) + '月' + str(x.day) + '日' for x in [now - datetime.timedelta(days=y) for y in range(7, 0, -1)]]
+		month_30 = [str(x.month) + '月' + str(x.day) + '日' for x in [now - datetime.timedelta(days=y) for y in range(30, 0, -1)]]
+		question_set = chain(user.question_set.all() ,[x.question for x in user.reply_set.all()])
+		tag_dict = {}
+		tag_father = {}
+		drill = {}
+		for tag in Category.objects.all():
+			tag_father[tag.name] = True if tag.base is None else False
+			drill[tag.name] = False
+		for question in question_set:
+			for tag_id in question.category.split(','):
+				tag = Category.objects.all().get(pk=int(tag_id))
+				tag_dict[tag.name] = tag_dict[tag.name] + 1 if tag.name in tag_dict else 1
+				if tag.base is not None:
+					base_name = tag.base.name
+					tag_dict[base_name] = tag_dict[base_name] + 1 if base_name in tag_dict else 1
+					drill[base_name] = True
+				else:
+					drill[tag.name] = True
+		base_data = []
+		slevel_data = []
+		base_tot = 0
+		#print(tag_dict)
+		for k, v in tag_dict.items():
+			if tag_father[k]:
+				base_tot += v
+		for k, v in tag_dict.items():
+			if tag_father[k]:
+				left = v
+				base_data.append({'name': k, 'y': float(v) / base_tot * 100.0, 'drilldown': k if drill[k] else None})
+				tag = Category.objects.all().get(name=k)
+				child_tags = Category.objects.all().filter(base=tag.id)
+				child_data = []
+				for x in child_tags:
+					if x.name in tag_dict:
+						child_data.append((x.name, float(tag_dict[x.name]) / base_tot * 100.0))
+						left -= tag_dict[x.name]
+				if left > 0:
+					child_data.append((k, float(left) / base_tot * 100.0))
+				if len(child_data) > 0:
+					slevel_data.append({'name': k, 'id': k, 'data': child_data})
+		return render(request, 'tabby/profile.html',
+			{'is_authenticated': is_authenticated,
+			'login_username': login_username,
+			'user_name': user.user.username,
+			'question_list': q_list,
+			'answer_list': ans_list,
+			'vote_list': t_list,
 			'head_image': head_image_name,
-			'user_description': user.description,
+			'hour_24': hour_24,
 			'active_day': active_day,
-			'hourp': [0,1,2],
-			'active_week': active_week,
 			'week_7': week_7,
+			'active_week': active_week,
+			'month_30': month_30,
 			'active_month': active_month,
-			'month_30': month_30})
+			'base_data': base_data,
+			'slevel_data': slevel_data})
 	else:
 		user.headimg = request.FILES['head_image']
 		user.headimg.name = user.user.username + '_' + str(timezone.now()) + '.jpg'
 		user.save()
 		return redirect(request.path)
+
 
 @login_required
 def vote(request):
@@ -327,6 +378,7 @@ def spaceless(x):
 def search(request):
 	if request.method == 'GET':
 		is_authenticated = True if request.user.is_authenticated else False
+		login_username = request.user.username if request.user.is_authenticated else ''
 		keyword = request.GET.get('keyword', None)
 		hits = []
 		users = [x.tuser for x in User.objects.all().filter(username__contains=keyword)]
@@ -370,16 +422,20 @@ def search(request):
 					if reply_content.find(keyword) != -1:
 						question_info['question_id'] = question.id
 						question_info['question_title'] = title
-						question_info['question_content'] = str_compress(reply_content)
+						question_info['question_content'] = 'RE:' + str_compress(reply_content)
 						hits.append(question_info)
 						break
-		return render(request, 'tabby/search.html', {'hit_info': hits, 'is_authenticated': is_authenticated})		
+		return render(request, 'tabby/search.html',
+			{'hit_info': hits,
+			'is_authenticated': is_authenticated,
+			'login_username': login_username})		
 	else:
 		pass
 
 def tag(request, tag_name):
 	if request.method == 'GET':
 		is_authenticated = True if request.user.is_authenticated else False
+		login_username = request.user.username if request.user.is_authenticated else ''
 		order = request.GET.get('order', 0)
 		tag = Category.objects.all().get(name=tag_name)
 		tag_id = tag.id
@@ -391,11 +447,9 @@ def tag(request, tag_name):
 		q_list = getQuestionList(order, q_model_list)
 		return render(request, 'tabby/tag.html',
 			{'is_authenticated': is_authenticated,
+			'login_username': login_username,
 			'q_list': q_list,
 			'order': order,
 			'tag_name': tag_name,
 			'tag_description': tag.description})
 
-def temp(request):
-	if request.method == 'GET':
-		return render(request, 'tabby/temp.html')

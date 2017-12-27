@@ -1,54 +1,148 @@
 {% extends "tabby/base.html" %}
 {% block title %}
-  Sign up/ Sign in
+Profile
 {% endblock title %}
 {% block content %}
-	<div class="container-fluid">
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/">TabbY</a>
-        </div>
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="#">111</a></li>
-          <li><a href="#">222</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="/logout">Sign out</a></li>
-          <li><a href="/login">Sign up/ Sign in</a></li>
-        </ul>
-      </div>
-    </nav>
-    </div>
-    <div class ="col-md-1"></div>
-    <div name="infomation" class ="row">
-        <div class = "col-sm-200 col-md-3" style="margin-top:50px">
-        	<div class="thumbnail">
-                <img class="circle" src="1.png">
-                <h3>&nbsp;&nbsp;昵称</h3><br/>
-                <p name="nickname">&nbsp;&nbsp;&nbsp;&nbsp;nickname.Z</p>
-                <br/>
-                <h3>&nbsp;&nbsp;个人简介</h3><br/>
-                <textarea class="form-control" rows="3" id="description">&nbsp;&nbsp;&nbsp;&nbsp;这是一个普通的，测试用的，凑字数的个人简介，应该差不多这么长吧</textarea>
-            </div>
-        </div>
-        <div class="col-md-1">
-        </div>
-        <div name="answer" class=" col-md-7 panel panel-default" style="margin-top:50px">
-        	<div class="panel-heading">
-            	<ul class="nav nav-pills nav-justified">
-                  <li role="presentation" class="active"><a href="profile.html" class="active"><h3>你提出的问题</h3></a></li>
-                  <li role="presentation"><a href="profile_answer.html"><h3>你回答的问题</h3></a></li>
-                  <li role="presentation"><a href="profile_vote.html"><h3>你点赞的问题</h3></a></li>
-                  <li role="presentation"><a href="profile_circle.html"><h3>你的活跃度</h3></a></li>
-                </ul>
-            </div>
-            <ul class="list-group">
-           {# <!--{% for question_title in q_list[?]#}
-            	<li class="list-group-item"><h4>你提出的问题1</h4></li>
-                <li class="list-group-item"><h5>问题1的最高回答</h5></li>
-            </ul>
-    	</div>
-      </div>
+<div class="container-fluid">
+  <div name="infomation" class ="row">
+	<div class = "col-sm-200 col-md-3" style="margin-top:50px">
+	  <div class="thumbnail">
+		  <img class="circle" src="1.png">
+		  <h3>&nbsp;&nbsp;昵称</h3><br/>
+		  <p name="nickname">&nbsp;&nbsp;&nbsp;&nbsp;nickname.Z</p>
+		  <br/>
+		  <h3>&nbsp;&nbsp;个人简介</h3><br/>
+		  <textarea class="form-control" rows="3" id="description">&nbsp;&nbsp;&nbsp;&nbsp;这是一个普通的，测试用的，凑字数的个人简介，应该差不多这么长吧</textarea>
+		</div>
+	</div>
+	<div class="col-md-1">
+	</div>
+	<div name="answer" class=" col-md-7 panel panel-default" style="margin-top:50px">
+	  <div class="panel-heading">
+		<ul id="nav" class="nav nav-pills nav-justified">
+		  <li role="presentation" class="active"><a href="javascript: void(0)"><h4>Overview</h4></a></li>
+		  <li role="presentation"><a href="javascript: void(0)"><h4>Your Questions</h4></a></li>
+		  <li role="presentation"><a href="javascript: void(0)"><h4>Your Answers</h4></a></li>
+		  <li role="presentation"><a href="javascript: void(0)"><h4>Your Votes</h4></a></li>
+		</ul>
+	  </div>
+	  <div class="overview" id="charts"></div>
+	  <div style="display: none;" class="questions">
+	  {% for question in question_list %}
+		<section class="question">
+		  <h4><a href="/question/{{question.question_id}}">{{question.question_title | safe}}</a></h4>
+		  <p>{{question.top_answer | safe}}</p>
+		  <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+		</section>
+	  {% endfor %} 
+	  </div>
+	  <div style="display: none;" class="answers">
+	  {% for answer in answer_list %}
+		<section class="question">
+		  <h4><a href="/question/{{answer.question_id}}#{{ answer.reply_id }}">{{answer.question_title | safe}}</a></h4>
+		  <p>{{answer.reply_content | safe}}</p>
+		  <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+		</section>
+	  {% endfor %}
+	  </div>
+	  <div style="display: none;" class="votes">
+	  {% for vote in vote_list %}
+		<section class="question">
+		  <h4><a href="/question/{{vote.question_id}}#{{ vote.reply_id }}">{{vote.question_title | safe}}</a></h4>
+		  <p>{{vote.reply_content | safe}}</p>
+		  <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+		</section>
+	  {% endfor %}
+	  </div>
+	</div>
   </div>
+</div>
 {% endblock content %}
+{% block scripts %}
+{% load static %}
+<script src="https://img.hcharts.cn/highcharts/highcharts.js"></script>
+<script src="https://img.hcharts.cn/highcharts/modules/exporting.js"></script>
+<script src="https://img.hcharts.cn/highcharts/modules/data.js"></script>
+<script src="https://img.hcharts.cn/highcharts/modules/drilldown.js"></script>
+<script src="http://img.hcharts.cn/highcharts/themes/grid-light.js"></script>
+<script>
+	$('#nav a').on('click', function() {
+	  var index = $('#nav a').index($(this))
+	  $('#nav li').removeClass('active')
+	  $('#nav li').eq(index).addClass('active')
+	  var div_type = ['.overview', '.questions', '.answers', '.votes']
+	  for(let i = 0; i < 4; ++i) {
+		$(div_type[i]).hide()
+	  }
+	  $(div_type[index]).show()
+	});
+
+	$('#charts').highcharts({
+		chart: {
+			type: 'pie'
+		},
+		title: {
+			text: 'Distribution'
+		},
+		plotOptions: {
+			series: {
+				dataLabels: {
+					enabled: true,
+					format: '{point.name}: {point.y:.1f}%'
+				}
+			}
+		},
+		tooltip: {
+			headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+			pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+		},
+		series: [{
+			name: 'Fields',
+			colorByPoint: true,
+			data: {{base_data | safe}}
+		}],
+		drilldown: {
+			series: {{slevel_data | safe}}
+		}
+	});
+/*var chart = Highcharts.chart('chart', {
+	chart: {
+		type: 'spline'
+	},
+	title: {
+		text: 'Day Active'
+	},
+	xAxis: {
+		categories: {{month_30 | safe}} 
+	},
+	yAxis: {
+		title: {
+			text: 'Active'
+		},
+		labels: {
+			formatter: function () {
+				return this.value;
+			}
+		}
+	},
+	tooltip: {
+		crosshairs: true,
+		shared: true
+	},
+	plotOptions: {
+		spline: {
+			marker: {
+				radius: 4,
+				lineColor: '#666666',
+				lineWidth: 1
+			}
+		}
+	},
+	series: [{
+		name: 'orz',
+		data: {{ active_month | safe}}	  
+	}]
+});*/
+
+</script>
+{% endblock scripts %}
