@@ -28,7 +28,7 @@ Tabby
                 </div>
             </div>
             <p class="card-text">
-                {{ description }}
+                {{ description|safe }}
             </p>
         </div>
     </div>
@@ -82,18 +82,18 @@ Tabby
 {% block scripts %}
 <script type="text/javascript" src="{% static "ckeditor/ckeditor.js" %}"></script>
 <script>
-	var editor = CKEDITOR.replace('editor');
+	var editor = CKEDITOR.replace('editor')
 	function submit_answer() {
-		var answer = CKEDITOR.instances.editor.getData();
+		var answer = CKEDITOR.instances.editor.getData()
 		$.post(
 			'/new_answer/', {
 				'q_id': $('#q_id').attr('value'),
 				'ans': answer
 			},
 			function(result) {
-				location.reload();
+				location.reload()
 			}
-		);
+        )
 	}
     function getCookie(name) {  
         var cookieValue = null

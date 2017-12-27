@@ -34,14 +34,17 @@ New Question
             </div>
         </div>
         <div class="form-group">
-            <textarea class="form-control" name="description" rows="15" style="width: 70%;" placeholder="Write description here"></textarea>
+            <div id="editor"></div>
+            <textarea class="form-control hidden" name="description" id="description"></textarea>
         </div>
         <button type="submit" class="btn btn-default" onclick="return handleTags()">submit</button>
     </form>
 </div>
 {% endblock content %}
 {% block scripts %}
+<script type="text/javascript" src="{% static "ckeditor/ckeditor.js" %}"></script>
 <script>
+	var editor = CKEDITOR.replace('editor')
     var all_taglist = $('.tag-input').data('tag')
     all_taglist = all_taglist.substr(2, all_taglist.length - 4).split("', '")
     var selected_tag = $('.selected-tag').toArray()
@@ -121,6 +124,8 @@ New Question
 
     function handleTags() {
         var selected_tag_name = new Array()
+        var description = CKEDITOR.instances.editor.getData()
+        $('#description').val(description)
         for(let i = 0; i < selected_tag_num; ++i) {
             selected_tag_name[i] = $(selected_tag[i]).text()
         }
