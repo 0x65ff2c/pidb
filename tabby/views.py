@@ -129,6 +129,7 @@ def newQuestion(request):
         default_taglist = topKCategory(20)
         return render(request, 'tabby/new_question.html',
             {'is_authenticated': True,
+            'login_username': request.user.username,
             'default_taglist': default_taglist,
             'all_taglist': all_taglist})
 
@@ -315,6 +316,7 @@ def spaceless(x):
 def search(request):
     if request.method == 'GET':
         is_authenticated = True if request.user.is_authenticated else False
+        login_username = request.user.username if request.user.is_authenticated else ''
         keyword = request.GET.get('keyword', None)
         hits = []
         users = [x.tuser for x in User.objects.all().filter(username__contains=keyword)]
@@ -361,13 +363,17 @@ def search(request):
                         question_info['question_content'] = 'RE:' + str_compress(reply_content)
                         hits.append(question_info)
                         break
-        return render(request, 'tabby/search.html', {'hit_info': hits, 'is_authenticated': is_authenticated})		
+        return render(request, 'tabby/search.html',
+            {'hit_info': hits,
+            'is_authenticated': is_authenticated,
+            'login_username': login_username})		
     else:
         pass
 
 def tag(request, tag_name):
     if request.method == 'GET':
         is_authenticated = True if request.user.is_authenticated else False
+        login_username = request.user.username if request.user.is_authenticated else ''
         order = request.GET.get('order', 0)
         tag = Category.objects.all().get(name=tag_name)
         tag_id = tag.id
@@ -379,9 +385,8 @@ def tag(request, tag_name):
         q_list = getQuestionList(order, q_model_list)
         return render(request, 'tabby/tag.html',
             {'is_authenticated': is_authenticated,
+            'login_username': login_username,
             'q_list': q_list,
             'order': order,
             'tag_name': tag_name,
             'tag_description': tag.description})
-
-
