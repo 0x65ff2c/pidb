@@ -7,6 +7,10 @@ Tabby
 <link rel="stylesheet" href="{% static "css/question.css" %}">
 <link rel="stylesheet" href="{% static "css/qa.css" %}">
 <link rel="stylesheet" href="{% static "css/tag.css" %}">
+<link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+<script type="text/javascript" src="{% static "js/jquery-1.9.0" %}></script>
+<script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor.js" %}"></script>
 {% endblock css %}
 {% block content %}
 <div class="container">
@@ -37,9 +41,10 @@ Tabby
         {% for ans in ans_list %}
             <article class="ans-item">
                 <div class="ans-author">
+					<img class="ans-head_image" src="/static/{{ans.head_image}}" />
                     <a href="/profile/{{ ans.author }}"><strong>{{ ans.author }}</strong></a>
                 </div>
-                <p class="card-text">{{ ans.description }}</p>
+                <p class="card-text">{{ ans.description | safe}}</p>
                 <div class="row">
                     <div class="col-md-2 ans-info">
                         {{ ans.time_diff }}
@@ -66,14 +71,9 @@ Tabby
     {% if is_authenticated %}
         <h1 class="h3 card-header">Write your answer</h1>
         <div class="card-body">
-            <form action="{% url 'tabby:new_answer' %}" method="POST"> {% csrf_token %}
-                <input type="hidden" name="q_id" value="{{ q_id }}">
-                <div class="form-group">
-                    <textarea class="form-control" name="ans" rows="10" style="width: 70%;"></textarea>
-                </div>
-                <button type="submit" class="btn btn-default">submit</button>
-
-            </form>
+           <input id="q_id" type="hidden" name="q_id" value="{{ q_id }}">
+           <div id="editor"></div>
+           <button id="submit_btn" class="btn btn-default" onclick="submit_answer()">Submit</button>
         </div>
     {% else %}
         <a href="/login">Sign in</a> befor answering
@@ -84,6 +84,19 @@ Tabby
 
 {% block scripts %}
 <script>
+	var editor = CKEDITOR.replace('editor');
+	function submit_answer() {
+		var answer = CKEDITOR.instances.editor.getData();
+		$.post(
+			'/new_answer/', {
+				'q_id': $('#q_id').attr('value'),
+				'ans': answer
+			},
+			function(result) {
+				location.reload();
+			}
+		);
+	}
     function getCookie(name) {  
         var cookieValue = null
         if (document.cookie && document.cookie != '') {  
