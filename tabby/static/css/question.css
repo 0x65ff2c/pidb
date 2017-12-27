@@ -56,19 +56,3 @@
 .card-header {
     margin-bottom: 15px;
 }
-
-.ans-head_image {
-	display: inline-block;
-	height: 3%;
-	width: 3%;
-	margin-right: 0.5%;
-	border-radius: 50%;
-}
-
-.card {
-	margin-bottom: 5%;
-}
-
-#submit_btn {
-	margin-top: 1%;
-}

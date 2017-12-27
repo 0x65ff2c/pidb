@@ -8,9 +8,6 @@ Tabby
 <link rel="stylesheet" href="{% static "css/qa.css" %}">
 <link rel="stylesheet" href="{% static "css/tag.css" %}">
 <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
-<script type="text/javascript" src="{% static "js/jquery-1.9.0" %}></script>
-<script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
-<script type="text/javascript" src="{% static "ckeditor/ckeditor.js" %}"></script>
 {% endblock css %}
 {% block content %}
 <div class="container">
@@ -41,8 +38,8 @@ Tabby
         {% for ans in ans_list %}
             <article class="ans-item">
                 <div class="ans-author">
-					<img class="ans-head_image" src="/static/{{ans.head_image}}" />
-                    <a href="/profile/{{ ans.author }}"><strong>{{ ans.author }}</strong></a>
+                    <div class="ans-head-image"><img src="/static/{{ans.head_image}}" /></div>
+                    <div class="ans-author-name"><a href="/profile/{{ ans.author }}"><strong>{{ ans.author }}</strong></a></div>
                 </div>
                 <p class="card-text">{{ ans.description | safe}}</p>
                 <div class="row">
@@ -83,6 +80,7 @@ Tabby
 {% endblock content %}
 
 {% block scripts %}
+<script type="text/javascript" src="{% static "ckeditor/ckeditor.js" %}"></script>
 <script>
 	var editor = CKEDITOR.replace('editor');
 	function submit_answer() {

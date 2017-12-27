@@ -18,10 +18,35 @@
 }
 
 .ans-author {
-    text-align: left;
     margin-bottom: 10px;
+}
+
+.ans-head-image {
+	display: inline-block;
+	height: 45px;
+	width: 45px;
+	margin-right: 0.5%;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.ans-head-image img {
+    height: 45px;
+    margin: 0 auto;
+}
+
+.ans-author-name {
+    display: inline-block;
 }
 
 .ans-author a {
     color: #017E66;
+}
+
+.card {
+	margin-bottom: 5%;
+}
+
+#submit_btn {
+	margin-top: 1%;
 }
