@@ -103,6 +103,7 @@ def register(request):
 
 @login_required
 def newQuestion(request):
+<<<<<<< HEAD
 	"""
 	to make things easier, the browser tends to get tag name instead of tag id
 	"""
@@ -131,6 +132,38 @@ def newQuestion(request):
 			{'is_authenticated': True,
 			'default_taglist': default_taglist,
 			'all_taglist': all_taglist})
+=======
+    """
+    to make things easier, the browser tends to get tag name instead of tag id
+    """
+    login_username = request.user.username
+    if request.method == 'POST':
+        title = request.POST.get('title', None)
+        tags = request.POST.get('tags', None)
+        tag_list = tags.split(',')
+        tag_id_list = []
+        for tag in tag_list:
+            tag_id_list.append(str(Category.objects.get(name=tag).id))
+        category = ','.join(tag_id_list)
+        description = request.POST.get('description', None)
+        put_time = timezone.now()
+        tuser = request.user.tuser
+        new_q = Question(tuser=tuser, title=title, category=category, description=description, put_time=put_time)
+        new_q.save()
+        for tag in tag_list:
+            label = Category.objects.all().get(name=tag)
+            label.popularity += 1
+            label.save()
+        return redirect('/')
+    else:
+        all_taglist = [x.name for x in Category.objects.all()]
+        default_taglist = topKCategory(20)
+        return render(request, 'tabby/new_question.html',
+            {'is_authenticated': True,
+            'login_username': login_username,
+            'default_taglist': default_taglist,
+            'all_taglist': all_taglist})
+>>>>>>> 3e31d9cb8cb127609e3fc37d15d48dc9c8031f70
 
 def newAnswer(request):
 	if request.method == 'POST':
@@ -148,6 +181,7 @@ def newAnswer(request):
 		return render(request, 'tabby/error.html', {'err_msg': 'method should be Post'})
 
 def question(request, q_id):
+<<<<<<< HEAD
 	is_authenticated = True if request.user.is_authenticated else False
 	try:
 		q = Question.objects.get(id=q_id)
@@ -203,6 +237,67 @@ def home(request):
 			'order': order})
 	else:
 		pass	
+=======
+    is_authenticated = True if request.user.is_authenticated else False
+    login_username = request.user.username if request.user.is_authenticated else ''
+    try:
+        q = Question.objects.get(id=q_id)
+        ans_set = q.reply_set.all()
+    except:
+        return render(request, 'tabby/error.html', {'err_msg': 'question not found'})
+    title = q.title
+    description = q.description
+    tag = q.category
+    q_author = q.tuser.user.username
+    ans_list = []
+    for ans in ans_set:
+        time_diff = getTimeDiff(ans.put_time, timezone.now())
+        # cur_user_vote: whether current user has voted for this answer
+        # 0 no
+        # 2 like
+        # 4 hate
+        if is_authenticated:
+            try:
+                vote_relation = request.user.tuser.thumbrelation_set.get(reply=ans)
+                cur_user_vote = 2 if vote_relation.thumb_flag else 4
+            except:
+                cur_user_vote = 0
+        else:
+            cur_user_vote = 0
+        ans_info = {
+            'id': ans.id,
+            'time_diff': time_diff,
+            'description': ans.description,
+            'author': ans.tuser.user.username,
+            'head_image': ans.tuser.headimg.name if ans.tuser.headimg.name is not None else 'img/default.png',
+            'votes': ans.thumb_up,
+            'cur_user_vote': cur_user_vote
+        }
+        ans_list.append(ans_info)
+    return render(request, 'tabby/question.html', 
+        {'is_authenticated': is_authenticated,
+        'login_username': login_username,
+        'q_id': q_id,
+        'title': title,
+        'description': description,
+        'tags': [Category.objects.all().get(pk=x).name for x in tag.strip().split(',')],
+        'q_author': q_author,
+        'ans_list': ans_list})
+
+def home(request):
+    if request.method == 'GET':
+        order = request.GET.get('order', 0)
+        is_authenticated = True if request.user.is_authenticated else False
+        login_username = request.user.username if request.user.is_authenticated else ''
+        q_list = getQuestionList(order, Question.objects.all())
+        return render(request, 'tabby/home.html',
+            {'q_list': q_list,
+            'is_authenticated': is_authenticated,
+            'login_username': login_username,
+            'order': order})
+    else:
+        pass	
+>>>>>>> 3e31d9cb8cb127609e3fc37d15d48dc9c8031f70
 
 def profile(request, user_name):
 	try:
@@ -367,4 +462,5 @@ def tag(request, tag_name):
 			'order': order,
 			'tag_name': tag_name,
 			'tag_description': tag.description})
+
 
