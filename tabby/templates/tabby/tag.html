@@ -2,11 +2,16 @@
 {% block title %}
 {{ tag_name }}
 {% endblock title %}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "css/question.css" %}">
+<link rel="stylesheet" href="{% static "css/tag.css" %}">
+{% endblock css %}
 {% block content %}
 <div class="container">
     <div class="jumbotron">
-        <h3>tagname</h3>
-        <p>some description here...</p>
+        <h3>{{ tag_name }}</h3>
+        <p>{{ tag_description }}</p>
     </div>
     <div class="card">
     <div class="card-header">
