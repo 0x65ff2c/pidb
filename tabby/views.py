@@ -11,6 +11,7 @@ from django.db.models import *
 from django.conf import settings
 import datetime
 import os
+from html.parser import HTMLParser
 
 def getTimeDiff(startTime, endTime):
 	
@@ -255,3 +256,76 @@ def vote(request):
 		return HttpResponse(cur_ans.thumb_up)
 	else:
 		pass
+
+class contentParser(HTMLParser):
+	def __init__(self):
+		super(contentParser, self).__init__()
+		self.content = ''
+				
+	def handle_starttag(self, tag, attrs):
+		if tag == 'img':
+			self.content += '[图片]'
+	
+	def handle_data(self, data):
+		self.content += data
+		
+def str_compress(x):
+	thres = 100
+	return x[:thres] + '...' if len(x) > thres else x
+	
+def stronger(x, key):
+	return x.replace(key, '<strong>' + key + '</strong>') if x is not None else ''
+
+def spaceless(x):
+	return x.replace('\n', '&nbsp;').replace('\t', '&nbsp;')		
+
+def search(request):
+	if request.method == 'GET':
+		keyword = request.GET.get('keyword', None)
+		hits = []
+		users = [x.tuser for x in User.objects.all().filter(username__contains=keyword)]
+		for user in users:
+			user_info = {}
+			user_info['type'] = 'user'
+			user_info['user_id'] = user.id
+			user_info['user_name'] = stronger(user.user.username, keyword)
+			user_info['user_description'] = spaceless(stronger(user.description, keyword)) 
+			user_info['user_head_image'] = 'img/default.png' if user.headimg.name is None else user.headimg.name
+			hits.append(user_info)
+		tags = Category.objects.all().filter(name__contains=keyword)
+		for tag in tags:
+			tag_info = {}
+			tag_info['type'] = 'tag'
+			tag_info['tag_name'] = tag.name
+			tag_info['tag_description'] = tag.description
+			hits.append(tag_info)
+		for question in Question.objects.all():
+			title = stronger(question.title, keyword)
+			parser = contentParser()
+			parser.feed(parser.unescape(question.description))
+			desc = spaceless(stronger(parser.content, keyword))
+			question_info = {}
+			question_info['type'] = 'question'
+			if title.find(keyword) != -1 or desc.find(keyword) != -1:
+				question_info['question_id'] = question.id
+				question_info['question_title'] = title
+				question_info['question_content'] = str_compress(desc)
+				hits.append(question_info)
+			else:
+				for reply in question.reply_set.all():
+					parser = contentParser()
+					parser.feed(parser.unescape(reply.description))
+					reply_content = spaceless(stronger(parser.content, keyword))
+					if reply_content.find(keyword) != -1:
+						question_info['question_id'] = question.id
+						question_info['question_title'] = title
+						question_info['question_content'] = str_compress(reply_content)
+						hits.append(question_info)
+						break
+		return render(request, 'tabby/search.html', {'hit_info': hits})		
+	else:
+		pass
+
+def temp(request):
+	if request.method == 'GET':
+		return render(request, 'tabby/temp.html')

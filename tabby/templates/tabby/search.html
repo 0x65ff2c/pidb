@@ -1,0 +1,13 @@
+{% extends "tabby/base.html" %}
+{% block title %}
+   Search
+{% endblock title %}
+{% block css %}
+
+{% endblock css %}
+{% block content %}
+{% load static %}
+<div class="container">	
+	<p> {{ hit_info | safe }} </p>
+</div>
+{% endblock content %}
