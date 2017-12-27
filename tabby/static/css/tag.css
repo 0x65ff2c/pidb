@@ -82,3 +82,17 @@ li a:active {
     text-decoration: none;
     color: inherit;
 }
+
+.cke_1.cke_chrome {
+    border-color: rgb(212, 212, 212) !important;
+}
+
+.cke_1 .cke_top {
+    background-color: rgb(212, 212, 212) !important;
+    border-bottom-color: rgb(212, 212, 212) !important;
+}
+
+.cke_1 .cke_bottom {
+    background-color: rgb(212, 212, 212) !important;
+    border-top-color: rgb(212, 212, 212) !important;
+}

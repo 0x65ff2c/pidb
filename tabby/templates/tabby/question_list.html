@@ -3,12 +3,22 @@
     <section>
     <div class="row">
         <div class="col-md-2 qa_rank">
-        <div class="votes">{{ question.total_thumb }}<br>votes</div>
+        <div class="votes">{{ question.total_thumb }}<br>
+            {% if question.total_thumb < 2 %}
+            vote
+            {% else %}
+            votes
+            {% endif %}</div>
         <div {% if question.reply_num == 0 %}
         class="answers-r"
         {% else %}
         class="answers-g"
-        {% endif %} >{{ question.reply_num }}<br>replies</div>
+        {% endif %} >{{ question.reply_num }}<br>
+            {% if question.reply_num < 2 %}
+            reply
+            {% else %}
+            replies
+            {% endif %}</div>
         </div>
         <div class="col-md-10">
         <div class="author">

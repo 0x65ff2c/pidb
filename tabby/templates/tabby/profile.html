@@ -2,63 +2,136 @@
 {% block title %}
 Profile
 {% endblock title %}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static "css/profile.css" %}">
+{% endblock css %}
 {% block content %}
 <div class="container-fluid">
   <div name="infomation" class ="row">
-	<div class = "col-sm-200 col-md-3" style="margin-top:50px">
-	  <div class="thumbnail">
-		  <img class="circle" src="1.png">
-		  <h3>&nbsp;&nbsp;昵称</h3><br/>
-		  <p name="nickname">&nbsp;&nbsp;&nbsp;&nbsp;nickname.Z</p>
-		  <br/>
-		  <h3>&nbsp;&nbsp;个人简介</h3><br/>
-		  <textarea class="form-control" rows="3" id="description">&nbsp;&nbsp;&nbsp;&nbsp;这是一个普通的，测试用的，凑字数的个人简介，应该差不多这么长吧</textarea>
-		</div>
-	</div>
-	<div class="col-md-1">
-	</div>
-	<div name="answer" class=" col-md-7 panel panel-default" style="margin-top:50px">
-	  <div class="panel-heading">
-		<ul id="nav" class="nav nav-pills nav-justified">
-		  <li role="presentation" class="active"><a href="javascript: void(0)"><h4>Overview</h4></a></li>
-		  <li role="presentation"><a href="javascript: void(0)"><h4>Your Questions</h4></a></li>
-		  <li role="presentation"><a href="javascript: void(0)"><h4>Your Answers</h4></a></li>
-		  <li role="presentation"><a href="javascript: void(0)"><h4>Your Votes</h4></a></li>
-		</ul>
-	  </div>
-	  <div class="overview" id="charts"></div>
-	  <div style="display: none;" class="questions">
-	  {% for question in question_list %}
-		<section class="question">
-		  <h4><a href="/question/{{question.question_id}}">{{question.question_title | safe}}</a></h4>
-		  <p>{{question.top_answer | safe}}</p>
-		  <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
-		</section>
-	  {% endfor %} 
-	  </div>
-	  <div style="display: none;" class="answers">
-	  {% for answer in answer_list %}
-		<section class="question">
-		  <h4><a href="/question/{{answer.question_id}}#{{ answer.reply_id }}">{{answer.question_title | safe}}</a></h4>
-		  <p>{{answer.reply_content | safe}}</p>
-		  <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
-		</section>
-	  {% endfor %}
-	  </div>
-	  <div style="display: none;" class="votes">
-	  {% for vote in vote_list %}
-		<section class="question">
-		  <h4><a href="/question/{{vote.question_id}}#{{ vote.reply_id }}">{{vote.question_title | safe}}</a></h4>
-		  <p>{{vote.reply_content | safe}}</p>
-		  <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
-		</section>
-	  {% endfor %}
-	  </div>
-	</div>
+    <div class="col-md-1">
+    </div>
+    <div class = "col-sm-200 col-md-3" style="margin-top:50px">
+      <div class="thumbnail profile">
+        <div class="circle">
+            <img src="/static/{{ head_image }}">
+        </div>
+        <div class="edit-img">
+          <form enctype="multipart/form-data" action="/profile/{{ user_name }}/" method="post">
+          {% csrf_token %}
+            <div class="form-group">
+              <input type="file" name="head_image">
+            </div>
+            <textarea class="form-control hidden" name="description" rows="3" placeholder="write your description"></textarea>
+            <div class="form-group">
+              <button class="btn btn-default" type="submit">submit</button>
+            </div>
+          </form>
+        </div>
+        <h3 style="text-align: center;">{{ user_name }}</h3><br/>
+        <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>          
+        <p class="description">
+          {{ user_description }}
+        </p>
+        <div class="edit-description" data-description="{{ user_description|safe }}">
+          <form enctype="multipart/form-data" action="/profile/{{ user_name }}/" method="post">
+          {% csrf_token %}
+            <div class="form-group">
+              <textarea class="form-control" name="description" rows="3" placeholder="write your description"></textarea>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-default" type="submit">submit</button>
+            </div>
+          </form>
+        </div>
+        {% if user_name == login_username %}
+        <div id="edit-des" style="text-align: right;"><a class="btn btn-default" href="javascript: void(0)">edit</a></div>
+        {% endif %}
+      </div>
+    </div>
+    <div name="answer" class=" col-md-7 panel panel-default" style="margin-top:50px; padding: 0px;">
+      <div class="panel-heading">
+        <ul id="nav" class="nav nav-pills nav-justified">
+          <li role="presentation" class="active"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Overview</h4></a></li>
+          <li role="presentation"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Your Questions</h4></a></li>
+          <li role="presentation"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Your Answers</h4></a></li>
+          <li role="presentation"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Your Votes</h4></a></li>
+        </ul>
+      </div>
+      <div id="charts" class="overview">overview</div>
+      <div style="display: none; padding-top:10px;" class="questions">
+      {% for question in question_list %}
+        <section style="padding-left: 15px;" class="question">
+          <h4><a href="/question/{{question.question_id}}">{{question.question_title | safe}}</a></h4>
+          <p>{{question.top_answer | safe}}</p>
+          <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+        </section>
+      {% endfor %} 
+      </div>
+      <div style="display: none; padding-top:10px;" class="answers">
+      {% for answer in answer_list %}
+        <section style="padding-left: 15px;" class="question">
+          <h4><a href="/question/{{answer.question_id}}#{{ answer.reply_id }}">{{answer.question_title | safe}}</a></h4>
+          <p>{{answer.reply_content | safe}}</p>
+          <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+        </section>
+      {% endfor %}
+      </div>
+      <div style="display: none; padding-top:10px;" class="votes">
+      {% for vote in vote_list %}
+        <section style="padding-left: 15px;" class="question">
+          <h4><a href="/question/{{vote.question_id}}#{{ vote.reply_id }}">{{vote.question_title | safe}}</a></h4>
+          <p>{{vote.reply_content | safe}}</p>
+          <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+        </section>
+      {% endfor %}
+      </div>
+    </div>
   </div>
 </div>
 {% endblock content %}
 {% block scripts %}
+<script>
+  var description = $('.edit-description').data('description')
+  $('.edit-img textarea').val($('.description').text())
+  $('.edit-img').hide()
+  $('.edit-description').hide()
+  $('.profile a').on('click', function(e) {
+    $('.edit-description').show()
+    $('.edit-description textarea').text(description)
+    $('.description').hide()
+    $('#edit-des').hide()
+    $(document).one('click', function() {
+      $('.edit-description').hide()
+      $('.description').show()
+      $('#edit-des').show()
+    })
+    e.stopPropagation()
+  })
+  $('.edit-description').on('click', function(e) {
+    e.stopPropagation()
+  })
+  $('#nav a').on('click', function() {
+    var index = $('#nav a').index($(this))
+    $('#nav li').removeClass('active')
+    $('#nav li').eq(index).addClass('active')
+    var div_type = ['.overview', '.questions', '.answers', '.votes']
+    for(let i = 0; i < 4; ++i) {
+      $(div_type[i]).hide()
+    }
+    $(div_type[index]).show()
+  })
+  $('.edit-img input').on('change', function() {
+    $('.edit-img .btn').click()
+  })
+  $('.circle').on('click', function(e) {
+    select()
+  })
+
+  function select() {
+    return $('.edit-img input').click()
+  }
+</script>
 {% load static %}
 <script src="https://img.hcharts.cn/highcharts/highcharts.js"></script>
 <script src="https://img.hcharts.cn/highcharts/modules/exporting.js"></script>
