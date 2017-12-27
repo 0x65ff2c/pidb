@@ -20,10 +20,10 @@
     <div name="answer" class=" col-md-7 panel panel-default" style="margin-top:50px">
       <div class="panel-heading">
         <ul id="nav" class="nav nav-pills nav-justified">
-          <li role="presentation" class="active"><a href="#"><h3>Overview</h3></a></li>
-          <li role="presentation"><a href="#"><h3>Your Questions</h3></a></li>
-          <li role="presentation"><a href="#"><h3>Your Answers</h3></a></li>
-          <li role="presentation"><a href="#"><h3>Your Votes</h3></a></li>
+          <li role="presentation" class="active"><a href="javascript: void(0)"><h4>Overview</h4></a></li>
+          <li role="presentation"><a href="javascript: void(0)"><h4>Your Questions</h4></a></li>
+          <li role="presentation"><a href="javascript: void(0)"><h4>Your Answers</h4></a></li>
+          <li role="presentation"><a href="javascript: void(0)"><h4>Your Votes</h4></a></li>
         </ul>
       </div>
       <div class="overview">overview</div>
@@ -31,26 +31,23 @@
       {% for question in question_list %}
         <section class="question">
           <h4><a href="/question/{{question.question_id}}">{{question.question_title | safe}}</a></h4>
-          <p>{{question.question_content | safe}}</p>
-          <p>{{question.total_vote}}&nbsp;vote&nbsp;&nbsp;&nbsp;&nbsp;{{question.total_answer}}&nbsp;answer</p>
+          <p>{{question.top_answer | safe}}</p>
         </section>
       {% endfor %} 
       </div>
       <div style="display: none;" class="answers">
       {% for answer in answer_list %}
         <section class="question">
-          <h4><a href="/question/{{answer.question_id}}">{{answer.question_title | safe}}</a></h4>
-          <p>{{answer.question_content | safe}}</p>
-          <p>{{answer.total_vote}}&nbsp;vote&nbsp;&nbsp;&nbsp;&nbsp;{{answer.total_answer}}&nbsp;answer</p>
+          <h4><a href="/question/{{answer.question_id}}#{{ answer.reply_id }}">{{answer.question_title | safe}}</a></h4>
+          <p>{{answer.reply_content | safe}}</p>
         </section>
       {% endfor %}
       </div>
       <div style="display: none;" class="votes">
       {% for vote in vote_list %}
         <section class="question">
-          <h4><a href="/question/{{vote.question_id}}">{{vote.question_title | safe}}</a></h4>
-          <p>{{vote.question_content | safe}}</p>
-          <p>{{vote.total_vote}}&nbsp;vote&nbsp;&nbsp;&nbsp;&nbsp;{{vote.total_answer}}&nbsp;answer</p>
+          <h4><a href="/question/{{vote.question_id}}#{{ vote.reply_id }}">{{vote.question_title | safe}}</a></h4>
+          <p>{{vote.reply_content | safe}}</p>
         </section>
       {% endfor %}
       </div>
