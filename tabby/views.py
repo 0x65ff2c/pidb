@@ -30,6 +30,38 @@ def getTimeDiff(startTime, endTime):
 def topKCategory(K):
     return [x.name for x in Category.objects.all().order_by('-popularity')[:K]]
 
+def getQuestionList(order, q_model_list):
+    q_list = []
+    for question in q_model_list:
+        q_dict = {}
+        q_dict['title'] = question.title
+        q_dict['tags'] = [Category.objects.all().get(pk=x).name for x in question.category.strip().split(',')]
+        related_reply = question.reply_set.all()
+        q_dict['reply_num'] = related_reply.count()
+        q_dict.update(related_reply.aggregate(total_thumb = Sum('thumb_up')))
+        if q_dict['total_thumb'] is None:
+            q_dict['total_thumb'] = 0
+        q_dict['id'] = question.id
+        if related_reply.count() > 0:
+            q_dict['latest_act_user'] = related_reply.order_by('-put_time')[0].tuser.user.username
+            q_dict['latest_act_time'] = getTimeDiff(related_reply.order_by('-put_time')[0].put_time, timezone.now())
+            q_dict['lat'] = related_reply.order_by('-put_time')[0].put_time
+            q_dict['latest_act_type'] = 'replied'
+        else:
+            q_dict['latest_act_user'] = question.tuser.user.username
+            q_dict['latest_act_time'] = getTimeDiff(question.put_time, timezone.now())
+            q_dict['lat'] = question.put_time
+            q_dict['latest_act_type'] = 'asked'
+        q_list.append(q_dict)
+    order = int(order)
+    if order == 0:
+        q_list = sorted(q_list, key=lambda x: x['lat'], reverse=True)
+    elif order == 1:
+        q_list = sorted(q_list, key=lambda x: x['reply_num'], reverse=True)
+    else:
+        q_list = sorted(q_list, key=lambda x: x['total_thumb'], reverse=True)
+    return q_list
+
 @login_required
 def logout(request):
     auth.logout(request)
@@ -163,35 +195,7 @@ def home(request):
     if request.method == 'GET':
         order = request.GET.get('order', 0)
         is_authenticated = True if request.user.is_authenticated else False
-        q_list = []
-        for question in Question.objects.all():
-            q_dict = {}
-            q_dict['title'] = question.title
-            q_dict['tags'] = [Category.objects.all().get(pk=x).name for x in question.category.strip().split(',')]
-            related_reply = question.reply_set.all()
-            q_dict['reply_num'] = related_reply.count()
-            q_dict.update(related_reply.aggregate(total_thumb = Sum('thumb_up')))
-            if q_dict['total_thumb'] is None:
-                q_dict['total_thumb'] = 0
-            q_dict['id'] = question.id
-            if related_reply.count() > 0:
-                q_dict['latest_act_user'] = related_reply.order_by('-put_time')[0].tuser.user.username
-                q_dict['latest_act_time'] = getTimeDiff(related_reply.order_by('-put_time')[0].put_time, timezone.now())
-                q_dict['lat'] = related_reply.order_by('-put_time')[0].put_time
-                q_dict['latest_act_type'] = 'replied'
-            else:
-                q_dict['latest_act_user'] = question.tuser.user.username
-                q_dict['latest_act_time'] = getTimeDiff(question.put_time, timezone.now())
-                q_dict['lat'] = question.put_time
-                q_dict['latest_act_type'] = 'asked'
-            q_list.append(q_dict)
-        order = int(order)
-        if order == 0:
-            q_list = sorted(q_list, key=lambda x: x['lat'], reverse=True)
-        elif order == 1:
-            q_list = sorted(q_list, key=lambda x: x['reply_num'], reverse=True)
-        else:
-            q_list = sorted(q_list, key=lambda x: x['total_thumb'], reverse=True)
+        q_list = getQuestionList(order, Question.objects.all())
         return render(request, 'tabby/home.html',
             {'q_list': q_list,
             'is_authenticated': is_authenticated,
@@ -271,3 +275,18 @@ def vote(request):
 
 def search(request):
     return render(request, 'tabby/search.html', {})
+
+def tag(request, tag_name):
+    if request.method == 'GET':
+        is_authenticated = True if request.user.is_authenticated else False
+        order = request.GET.get('order', 0)
+        q_model_list = Question.objects.filter(
+            Q(category__endswith=',%s' % tag_name)|
+            Q(category__startswith='%s,' % tag_name)|
+            Q(category__contains=',%s,' % tag_name))
+        q_list = getQuestionList(order, q_model_list)
+        return render(request, 'tabby/tag.html',
+            {'is_authenticated': is_authenticated,
+            'q_list': q_list,
+            'order': order,
+            'tag_name': tag_name})
