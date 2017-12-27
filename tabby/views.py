@@ -251,13 +251,16 @@ def profile(request, user_name):
             {'is_authenticated': is_authenticated,
             'login_username': login_username,
             'user_name': user.user.username,
+            'user_description': user.description,
             'question_list': q_list,
             'answer_list': ans_list,
             'vote_list': t_list,
             'head_image': head_image_name})
     else:
-        user.headimg = request.FILES['head_image']
-        user.headimg.name = user.user.username + '_' + str(timezone.now()) + '.jpg'
+        if request.FILES.get('head_image', None) is not None:
+            user.headimg = request.FILES.get('head_image', None)
+            user.headimg.name = user.user.username + '_' + str(timezone.now()) + '.jpg'
+        user.description = request.POST.get('description', None)
         user.save()
         return redirect(request.path)
 
