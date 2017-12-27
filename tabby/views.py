@@ -66,8 +66,8 @@ def getQuestionList(order, q_model_list):
 	return q_list
 
 def intervalActive(user, startTime, endTime):
-	answer = user.question_set.all().filter(Q(put_time__gt=startTime) and Q(put_time__lte=endTime)).count()
-	reply = user.reply_set.all().filter(Q(put_time__gt=startTime) and Q(put_time__lte=endTime)).count()
+	answer = user.question_set.all().filter(Q(put_time__gt=startTime) & Q(put_time__lte=endTime)).count()
+	reply = user.reply_set.all().filter(Q(put_time__gt=startTime) & Q(put_time__lte=endTime)).count()
 	return answer + reply
 
 class contentParser(HTMLParser):
@@ -91,6 +91,9 @@ def stronger(x, key):
 
 def spaceless(x):
 	return x.replace('\n', '&nbsp;').replace('\t', '&nbsp;') if x is not None else ''
+
+def empty(x):
+	return x is None or len(x) == 0
 
 def simplize(x):
 	if x is None:
@@ -218,7 +221,7 @@ def question(request, q_id):
 			'time_diff': time_diff,
 			'description': ans.description,
 			'author': ans.tuser.user.username,
-			'head_image': ans.tuser.headimg.name if ans.tuser.headimg.name is not None else 'img/default.png',
+			'head_image': ans.tuser.headimg.name if empty(ans.tuser.headimg.name) == False else 'img/default.png',
 			'votes': ans.thumb_up,
 			'cur_user_vote': cur_user_vote
 		}
@@ -283,7 +286,7 @@ def profile(request, user_name):
 			t_info['reply_content'] = simplize(thumb_entry.reply.description)
 			t_info['type'] = 'thumb'
 			t_list.append(t_info)
-		head_image_name = 'img/default.png' if user.headimg.name is None else user.headimg.name
+		head_image_name = 'img/default.png' if empty(user.headimg.name) else user.headimg.name
 		now = timezone.now()
 		active_day = [intervalActive(user, x, x + datetime.timedelta(hours=1)) for x in [now - datetime.timedelta(hours=y) for y in range(24, 0, -1)]]
 		active_week = [intervalActive(user, x, x + datetime.timedelta(days=1)) for x in [now - datetime.timedelta(days=y) for y in range(7, 0, -1)]]
@@ -402,7 +405,7 @@ def search(request):
 			user_info['user_name'] = stronger(user.user.username, keyword)
 			user_info['un'] = user.user.username
 			user_info['user_description'] = spaceless(stronger(user.description, keyword)) 
-			user_info['user_head_image'] = 'img/default.png' if user.headimg.name is None else user.headimg.name
+			user_info['user_head_image'] = 'img/default.png' if empty(user.headimg.name) else user.headimg.name
 			hits.append(user_info)
 		tags = Category.objects.all().filter(name__contains=keyword)
 		for tag in tags:
@@ -414,9 +417,7 @@ def search(request):
 		for question in Question.objects.all():
 			reply_set = question.reply_set.all()	
 			title = stronger(question.title, keyword)
-			parser = contentParser()
-			parser.feed(parser.unescape(question.description))
-			desc = spaceless(stronger(parser.content, keyword))
+			desc = stronger(simplize(question.description), keyword)
 			question_info = {}
 			question_info['type'] = 'question'	
 			question_info.update(reply_set.aggregate(total_vote = Sum('thumb_up')))
@@ -426,17 +427,15 @@ def search(request):
 			if title.find(keyword) != -1 or desc.find(keyword) != -1:
 				question_info['question_id'] = question.id
 				question_info['question_title'] = title
-				question_info['question_content'] = str_compress(desc)
+				question_info['question_content'] = desc
 				hits.append(question_info)
 			else:
 				for reply in question.reply_set.all():
-					parser = contentParser()
-					parser.feed(parser.unescape(reply.description))
-					reply_content = spaceless(stronger(parser.content, keyword))
+					reply_content = stronger(simplize(reply.description), keyword)
 					if reply_content.find(keyword) != -1:
 						question_info['question_id'] = question.id
 						question_info['question_title'] = title
-						question_info['question_content'] = 'RE:' + str_compress(reply_content)
+						question_info['question_content'] = 'RE:' + reply_content
 						hits.append(question_info)
 						break
 		return render(request, 'tabby/search.html',
