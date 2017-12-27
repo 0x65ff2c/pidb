@@ -34,7 +34,7 @@ Result
             		<img src="/static/{{entry.user_head_image}}">
             		<div>
                 		<a href="/profile/{{entry.un}}">{{entry.user_name | safe}}</a>
-						<p> {{entry.user_description}} </p>
+						<p> {{entry.user_description | safe}} </p>
             		</div>
         		</section>
 			{% endif %}

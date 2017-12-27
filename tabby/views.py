@@ -65,6 +65,41 @@ def getQuestionList(order, q_model_list):
 		q_list = sorted(q_list, key=lambda x: x['total_thumb'], reverse=True)
 	return q_list
 
+def intervalActive(user, startTime, endTime):
+	answer = user.question_set.all().filter(Q(put_time__gt=startTime) and Q(put_time__lte=endTime)).count()
+	reply = user.reply_set.all().filter(Q(put_time__gt=startTime) and Q(put_time__lte=endTime)).count()
+	return answer + reply
+
+class contentParser(HTMLParser):
+	def __init__(self):
+		super(contentParser, self).__init__()
+		self.content = ''
+				
+	def handle_starttag(self, tag, attrs):
+		if tag == 'img':
+			self.content += '[图片]'
+	
+	def handle_data(self, data):
+		self.content += data
+		
+def str_compress(x):
+	thres = 100
+	return x[:thres] + '...' if len(x) > thres else x
+	
+def stronger(x, key):
+	return x.replace(key, '<strong>' + key + '</strong>') if x is not None else ''
+
+def spaceless(x):
+	return x.replace('\n', '&nbsp;').replace('\t', '&nbsp;') if x is not None else ''
+
+def simplize(x):
+	if x is None:
+		return ''
+	parser = contentParser()
+	parser.feed(parser.unescape(x))
+	x = parser.content
+	return str_compress(spaceless(x))
+		
 @login_required
 def logout(request):
 	auth.logout(request)
@@ -212,11 +247,6 @@ def home(request):
 	else:
 		pass	
 
-def intervalActive(user, startTime, endTime):
-	answer = user.question_set.all().filter(Q(put_time__gt=startTime) and Q(put_time__lte=endTime)).count()
-	reply = user.reply_set.all().filter(Q(put_time__gt=startTime) and Q(put_time__lte=endTime)).count()
-	return answer + reply
-
 def profile(request, user_name):
 	is_authenticated = True if request.user.is_authenticated else False
 	login_username = request.user.username if request.user.is_authenticated else ''
@@ -229,7 +259,7 @@ def profile(request, user_name):
 		for reply in user.reply_set.all():
 			reply_info = {}
 			reply_info['reply_id'] = reply.id
-			reply_info['reply_content'] = reply.description
+			reply_info['reply_content'] = simplize(reply.description)
 			reply_info['question_id'] = reply.question.id
 			reply_info['question_title'] = reply.question.title
 			reply_info['type'] = 'reply'
@@ -240,7 +270,7 @@ def profile(request, user_name):
 			question_info['question_id'] = question.id
 			question_info['question_title'] = question.title
 			reply_set = question.reply_set.all()
-			question_info['top_answer'] = reply_set.order_by('-thumb_up')[0].description if reply_set.count() > 0 else None
+			question_info['top_answer'] = simplize(reply_set.order_by('-thumb_up')[0].description if reply_set.count() > 0 else None)
 			question_info['type'] = 'question'
 			q_list.append(question_info)
 		t_list = []
@@ -250,7 +280,7 @@ def profile(request, user_name):
 			t_info['question_id'] = related_question.id
 			t_info['question_title'] = related_question.title
 			t_info['reply_id'] = thumb_entry.reply.id
-			t_info['reply_content'] = thumb_entry.reply.description
+			t_info['reply_content'] = simplize(thumb_entry.reply.description)
 			t_info['type'] = 'thumb'
 			t_list.append(t_info)
 		head_image_name = 'img/default.png' if user.headimg.name is None else user.headimg.name
@@ -294,19 +324,23 @@ def profile(request, user_name):
 				child_data = []
 				for x in child_tags:
 					if x.name in tag_dict:
-						child_data.append((x.name, float(tag_dict[x.name]) / base_tot * 100.0))
+						child_data.append([x.name, float(tag_dict[x.name]) / base_tot * 100.0])
 						left -= tag_dict[x.name]
 				if left > 0:
-					child_data.append((k, float(left) / base_tot * 100.0))
+					child_data.append([k, float(left) / base_tot * 100.0])
 				if len(child_data) > 0:
 					slevel_data.append({'name': k, 'id': k, 'data': child_data})
 		return render(request, 'tabby/profile.html',
 			{'is_authenticated': is_authenticated,
 			'login_username': login_username,
 			'user_name': user.user.username,
+			'user_description': user.description if user.description is not None else '(￣_,￣ ) 该用户很懒，什么也没有留下.',
 			'question_list': q_list,
+			'qlist_len': len(q_list),
 			'answer_list': ans_list,
+			'alist_len': len(ans_list),
 			'vote_list': t_list,
+			'vlist_len': len(t_list),
 			'head_image': head_image_name,
 			'hour_24': hour_24,
 			'active_day': active_day,
@@ -353,28 +387,7 @@ def vote(request):
 		return HttpResponse(cur_ans.thumb_up)
 	else:
 		pass
-
-class contentParser(HTMLParser):
-	def __init__(self):
-		super(contentParser, self).__init__()
-		self.content = ''
-				
-	def handle_starttag(self, tag, attrs):
-		if tag == 'img':
-			self.content += '[图片]'
 	
-	def handle_data(self, data):
-		self.content += data
-		
-def str_compress(x):
-	thres = 100
-	return x[:thres] + '...' if len(x) > thres else x
-	
-def stronger(x, key):
-	return x.replace(key, '<strong>' + key + '</strong>') if x is not None else ''
-
-def spaceless(x):
-	return x.replace('\n', '&nbsp;').replace('\t', '&nbsp;')		
 
 def search(request):
 	if request.method == 'GET':

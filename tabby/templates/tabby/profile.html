@@ -24,7 +24,7 @@ Profile
             </div>
             <textarea class="form-control hidden" name="description" rows="3" placeholder="write your description"></textarea>
             <div class="form-group">
-              <button class="btn btn-default" type="submit">submit</button>
+              <button class="btn btn-default" type="submit">Submit</button>
             </div>
           </form>
         </div>
@@ -40,25 +40,29 @@ Profile
               <textarea class="form-control" name="description" rows="3" placeholder="write your description"></textarea>
             </div>
             <div class="form-group">
-              <button class="btn btn-default" type="submit">submit</button>
+              <button class="btn btn-default" type="submit">Submit</button>
             </div>
           </form>
         </div>
         {% if user_name == login_username %}
-        <div id="edit-des" style="text-align: right;"><a class="btn btn-default" href="javascript: void(0)">edit</a></div>
+        <div id="edit-des" style="text-align: right;"><a class="btn btn-default" href="javascript: void(0)">Edit</a></div>
         {% endif %}
       </div>
     </div>
     <div name="answer" class=" col-md-7 panel panel-default" style="margin-top:50px; padding: 0px;">
       <div class="panel-heading">
         <ul id="nav" class="nav nav-pills nav-justified">
-          <li role="presentation" class="active"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Overview</h4></a></li>
-          <li role="presentation"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Your Questions</h4></a></li>
-          <li role="presentation"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Your Answers</h4></a></li>
-          <li role="presentation"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Your Votes</h4></a></li>
+          <li role="presentation" class="active"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Overview</h5></a></li>
+          <li role="presentation"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Questions({{qlist_len}})</h5></a></li>
+          <li role="presentation"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Answers({{alist_len}})</h5></a></li>
+          <li role="presentation"><a style="padding-top:4px; padding-bottom: 4px;" href="javascript: void(0)"><h5>Votes({{vlist_len}})</h5></a></li>
         </ul>
       </div>
-      <div id="charts" class="overview">overview</div>
+      <div class="overview">
+	  	<div id="liveness-spline" style="margin-top: 10px"></div>
+		<HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+		<div id="distribution-pie"></div>
+	  </div>
       <div style="display: none; padding-top:10px;" class="questions">
       {% for question in question_list %}
         <section style="padding-left: 15px;" class="question">
@@ -150,7 +154,7 @@ Profile
 	  $(div_type[index]).show()
 	});
 
-	$('#charts').highcharts({
+	$('#distribution-pie').highcharts({
 		chart: {
 			type: 'pie'
 		},
@@ -178,44 +182,43 @@ Profile
 			series: {{slevel_data | safe}}
 		}
 	});
-/*var chart = Highcharts.chart('chart', {
-	chart: {
-		type: 'spline'
-	},
-	title: {
-		text: 'Day Active'
-	},
-	xAxis: {
-		categories: {{month_30 | safe}} 
-	},
-	yAxis: {
-		title: {
-			text: 'Active'
+	$('#liveness-spline').highcharts({
+		chart: {
+			type: 'spline'
 		},
-		labels: {
-			formatter: function () {
-				return this.value;
+		title: {
+			text: 'Daily Liveness'
+		},
+		xAxis: {
+			categories: {{hour_24 | safe}} 
+		},
+		yAxis: {
+			title: {
+				text: 'Liveness'
+			},
+			labels: {
+				formatter: function () {
+					return this.value;
+				}
 			}
-		}
-	},
-	tooltip: {
-		crosshairs: true,
-		shared: true
-	},
-	plotOptions: {
-		spline: {
-			marker: {
-				radius: 4,
-				lineColor: '#666666',
-				lineWidth: 1
+		},
+		tooltip: {
+			crosshairs: true,
+			shared: true
+		},
+		plotOptions: {
+			spline: {
+				marker: {
+					radius: 4,
+					lineColor: '#666666',
+					lineWidth: 1
+				}
 			}
-		}
-	},
-	series: [{
-		name: 'orz',
-		data: {{ active_month | safe}}	  
-	}]
-});*/
-
+		},
+		series: [{
+			name: 'Daily Liveness',
+			data: {{ active_day | safe}}	  
+		}]
+	});
 </script>
 {% endblock scripts %}
