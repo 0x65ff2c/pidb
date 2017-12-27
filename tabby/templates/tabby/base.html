@@ -31,7 +31,7 @@
             <input id="search" class="form-control" style="margin-top: 8px;" type="text" placeholder="Search">
           </li>
         {% if is_authenticated %}
-          <li>Welcome, <br>{{ login_username }}</li>
+          <li>Welcome, <br><a style="padding: 0px;" href="/profile/{{ login_username }}">{{ login_username }}</a></li>
           <li><a href="/logout">Sign out</a></li>
         {% else %}
           <li><a href="/login">Sign up/ Sign in</a></li>
