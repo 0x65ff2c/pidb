@@ -18,14 +18,15 @@
 }
 
 .ans-author {
+    height: 50px;
     margin-bottom: 10px;
 }
 
 .ans-head-image {
-	display: inline-block;
+	float: left;
 	height: 45px;
-	width: 45px;
-	margin-right: 0.5%;
+    width: 45px;
+    margin-right: 5px;
     border-radius: 50%;
     overflow: hidden;
 }
@@ -36,7 +37,9 @@
 }
 
 .ans-author-name {
-    display: inline-block;
+    height: 45px;
+    line-height: 45px;
+    float: left;
 }
 
 .ans-author a {
