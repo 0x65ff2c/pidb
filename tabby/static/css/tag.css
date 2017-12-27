@@ -11,6 +11,11 @@
     text-align: center;
 }
 
+.tag:hover {
+    background-color: #017E66;
+    color: white;
+}
+
 .tag-input {
     position: relative;
     background-color: #fff;
