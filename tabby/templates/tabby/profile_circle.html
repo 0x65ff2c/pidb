@@ -37,18 +37,60 @@
         <div name="answer" class=" col-md-7 panel panel-default" style="margin-top:50px">
         	<div class="panel-heading">
             	<ul class="nav nav-pills nav-justified">
-                  <li role="presentation" class="active"><a href="profile.html" class="active"><h3>你提出的问题</h3></a></li>
-                  <li role="presentation"><a href="profile_answer.html"><h3>你回答的问题</h3></a></li>
+                  <li role="presentation"><a href="profile.html" ><h3>你提出的问题</h3></a></li>
+                  <li role="presentation"><a href="profile_answer.html" ><h3>你回答的问题</h3></a></li>
                   <li role="presentation"><a href="profile_vote.html"><h3>你点赞的问题</h3></a></li>
-                  <li role="presentation"><a href="profile_circle.html"><h3>你的活跃度</h3></a></li>
+                  <li role="presentation"  class="active"><a href="profile_circle.html" class="active"><h3>你的活跃度</h3></a></li>
                 </ul>
             </div>
-            <!--{% if q_list %}-->
-            <ul class="list-group">
-            <!--{% for question_title in q_list[?] %}-->
-            	<li class="list-group-item"><h4>你提出的问题1</h4><!--{{question.title}}--></li>
-                <li class="list-group-item"><h5>问题1的最高回答</h5><!--{{question.?}}--></li>
-            </ul>
+            <div id="canvas">
+            	<canvas id="myChart" width="200" height="100"></canvas>
+                
+            </div>
+            <script src="js/chart.js"></script>
+            <script src="js/jquery-1.9.0.js"></script>
+            <script src="js/bootstrap.js"></script>
+            <script type="text/javascript">
+			var ctx = document.getElementById("myChart").getContext('2d');
+			var myChart = new Chart(ctx, {
+				type: 'bar',
+				data: {
+					labels: ["Sun", "Mon", "Tue", "Wed", "Tur", "Fri","Sat"],
+					datasets: [{
+						label: '活跃度',
+						data: [12, 19, 3, 5, 2, 3,2],
+						backgroundColor: [
+							'rgba(255, 99, 132, 0.2)',
+							'rgba(54, 162, 235, 0.2)',
+							'rgba(255, 206, 86, 0.2)',
+							'rgba(75, 192, 192, 0.2)',
+							'rgba(153, 102, 255, 0.2)',
+							'rgba(200, 255, 100, 0.2)',
+							'rgba(255, 159, 64, 0.2)'
+						],
+						borderColor: [
+							'rgba(255,99,132,1)',
+							'rgba(54, 162, 235, 1)',
+							'rgba(255, 206, 86, 1)',
+							'rgba(75, 192, 192, 1)',
+							'rgba(153, 102, 255, 1)',
+							'rgba(200, 150, 100, 1)',
+							'rgba(255, 159, 64, 1)'
+						],
+						borderWidth: 1
+					}]
+				},
+				options: {
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero:true
+							}
+						}]
+					}
+				}
+			});
+			</script>
     	</div>
       </div>
   </div>
