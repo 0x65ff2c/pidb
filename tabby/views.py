@@ -305,6 +305,7 @@ def search(request):
             user_info = {}
             user_info['type'] = 'user'
             user_info['user_name'] = stronger(user.user.username, keyword)
+            user_info['un'] = user.user.username
             user_info['user_description'] = spaceless(stronger(user.description, keyword)) 
             user_info['user_head_image'] = 'img/default.png' if user.headimg.name is None else user.headimg.name
             hits.append(user_info)
