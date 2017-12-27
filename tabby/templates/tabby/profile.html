@@ -3,52 +3,115 @@
   Sign up/ Sign in
 {% endblock title %}
 {% block content %}
-	<div class="container-fluid">
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/">TabbY</a>
+<div class="container-fluid">
+  <div name="infomation" class ="row">
+    <div class = "col-sm-200 col-md-3" style="margin-top:50px">
+      <div class="thumbnail">
+          <img class="circle" src="1.png">
+          <h3>&nbsp;&nbsp;昵称</h3><br/>
+          <p name="nickname">&nbsp;&nbsp;&nbsp;&nbsp;nickname.Z</p>
+          <br/>
+          <h3>&nbsp;&nbsp;个人简介</h3><br/>
+          <textarea class="form-control" rows="3" id="description">&nbsp;&nbsp;&nbsp;&nbsp;这是一个普通的，测试用的，凑字数的个人简介，应该差不多这么长吧</textarea>
         </div>
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="#">111</a></li>
-          <li><a href="#">222</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="/logout">Sign out</a></li>
-          <li><a href="/login">Sign up/ Sign in</a></li>
-        </ul>
-      </div>
-    </nav>
     </div>
-    <div class ="col-md-1"></div>
-    <div name="infomation" class ="row">
-        <div class = "col-sm-200 col-md-3" style="margin-top:50px">
-        	<div class="thumbnail">
-                <img class="circle" src="1.png">
-                <h3>&nbsp;&nbsp;昵称</h3><br/>
-                <p name="nickname">&nbsp;&nbsp;&nbsp;&nbsp;nickname.Z</p>
-                <br/>
-                <h3>&nbsp;&nbsp;个人简介</h3><br/>
-                <textarea class="form-control" rows="3" id="description">&nbsp;&nbsp;&nbsp;&nbsp;这是一个普通的，测试用的，凑字数的个人简介，应该差不多这么长吧</textarea>
-            </div>
-        </div>
-        <div class="col-md-1">
-        </div>
-        <div name="answer" class=" col-md-7 panel panel-default" style="margin-top:50px">
-        	<div class="panel-heading">
-            	<ul class="nav nav-pills nav-justified">
-                  <li role="presentation" class="active"><a href="profile.html" class="active"><h3>你提出的问题</h3></a></li>
-                  <li role="presentation"><a href="profile_answer.html"><h3>你回答的问题</h3></a></li>
-                  <li role="presentation"><a href="profile_vote.html"><h3>你点赞的问题</h3></a></li>
-                  <li role="presentation"><a href="profile_circle.html"><h3>你的活跃度</h3></a></li>
-                </ul>
-            </div>
-            <ul class="list-group">
-           {# <!--{% for question_title in q_list[?]#}
-            	<li class="list-group-item"><h4>你提出的问题1</h4></li>
-                <li class="list-group-item"><h5>问题1的最高回答</h5></li>
-            </ul>
-    	</div>
+    <div class="col-md-1">
+    </div>
+    <div name="answer" class=" col-md-7 panel panel-default" style="margin-top:50px">
+      <div class="panel-heading">
+        <ul id="nav" class="nav nav-pills nav-justified">
+          <li role="presentation" class="active"><a href="#"><h3>Overview</h3></a></li>
+          <li role="presentation"><a href="#"><h3>Your Questions</h3></a></li>
+          <li role="presentation"><a href="#"><h3>Your Answers</h3></a></li>
+          <li role="presentation"><a href="#"><h3>Your Votes</h3></a></li>
+        </ul>
       </div>
+      <div class="overview">overview</div>
+      <div style="display: none;" class="questions">
+      {% for question in question_list %}
+        <section class="question">
+          <h4><a href="/question/{{question.question_id}}">{{question.question_title | safe}}</a></h4>
+          <p>{{question.question_content | safe}}</p>
+          <p>{{question.total_vote}}&nbsp;vote&nbsp;&nbsp;&nbsp;&nbsp;{{question.total_answer}}&nbsp;answer</p>
+        </section>
+      {% endfor %} 
+      </div>
+      <div style="display: none;" class="answers">
+      {% for answer in answer_list %}
+        <section class="question">
+          <h4><a href="/question/{{answer.question_id}}">{{answer.question_title | safe}}</a></h4>
+          <p>{{answer.question_content | safe}}</p>
+          <p>{{answer.total_vote}}&nbsp;vote&nbsp;&nbsp;&nbsp;&nbsp;{{answer.total_answer}}&nbsp;answer</p>
+        </section>
+      {% endfor %}
+      </div>
+      <div style="display: none;" class="votes">
+      {% for vote in vote_list %}
+        <section class="question">
+          <h4><a href="/question/{{vote.question_id}}">{{vote.question_title | safe}}</a></h4>
+          <p>{{vote.question_content | safe}}</p>
+          <p>{{vote.total_vote}}&nbsp;vote&nbsp;&nbsp;&nbsp;&nbsp;{{vote.total_answer}}&nbsp;answer</p>
+        </section>
+      {% endfor %}
+      </div>
+    </div>
   </div>
+</div>
 {% endblock content %}
+{% block scripts %}
+<script>
+    $('#nav a').on('click', function() {
+      var index = $('#nav a').index($(this))
+      $('#nav li').removeClass('active')
+      $('#nav li').eq(index).addClass('active')
+      var div_type = ['.overview', '.questions', '.answers', '.votes']
+      for(let i = 0; i < 4; ++i) {
+        $(div_type[i]).hide()
+      }
+      $(div_type[index]).show()
+  })
+</script>
+{% load static %}
+<script src="{% static "js/chart.js.js" %}"></script>
+<script type="text/javascript">
+var ctx = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx, {
+type: 'bar',
+data: {
+labels: ["Sun", "Mon", "Tue", "Wed", "Tur", "Fri","Sat"],
+datasets: [{
+label: '活跃度',
+data: [12, 19, 3, 5, 2, 3,2],
+backgroundColor: [
+  'rgba(255, 99, 132, 0.2)',
+  'rgba(54, 162, 235, 0.2)',
+  'rgba(255, 206, 86, 0.2)',
+  'rgba(75, 192, 192, 0.2)',
+  'rgba(153, 102, 255, 0.2)',
+  'rgba(200, 255, 100, 0.2)',
+  'rgba(255, 159, 64, 0.2)'
+],
+borderColor: [
+  'rgba(255,99,132,1)',
+  'rgba(54, 162, 235, 1)',
+  'rgba(255, 206, 86, 1)',
+  'rgba(75, 192, 192, 1)',
+  'rgba(153, 102, 255, 1)',
+  'rgba(200, 150, 100, 1)',
+  'rgba(255, 159, 64, 1)'
+],
+borderWidth: 1
+}]
+},
+options: {
+scales: {
+yAxes: [{
+  ticks: {
+    beginAtZero:true
+  }
+}]
+}
+}
+});
+</script>
+{% endblock scripts %}

@@ -347,7 +347,7 @@ def search(request):
 					if reply_content.find(keyword) != -1:
 						question_info['question_id'] = question.id
 						question_info['question_title'] = title
-						question_info['question_content'] = str_compress(reply_content)
+						question_info['question_content'] = 'RE:' + str_compress(reply_content)
 						hits.append(question_info)
 						break
 		return render(request, 'tabby/search.html', {'hit_info': hits, 'is_authenticated': is_authenticated})		
