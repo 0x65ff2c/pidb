@@ -23,12 +23,15 @@
           <a class="navbar-brand" href="/">TabbY</a>
         </div>
         <ul class="nav navbar-nav">
-          <li class="active"><a href="#">111</a></li>
-          <li><a href="#">222</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/new_question">New Question</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
+          <li style="margin-right: 20px;">
+            <input id="search" class="form-control" style="margin-top: 8px;" type="text" placeholder="Search">
+          </li>
         {% if is_authenticated %}
-          <li>Welcome</li>
+          <li>Welcome, <br>hhd</li>
           <li><a href="/logout">Sign out</a></li>
         {% else %}
           <li><a href="/login">Sign up/ Sign in</a></li>
@@ -43,6 +46,14 @@
 
   <script src="{% static "js/jquery-1.9.0.js" %}"></script>
   <script src="{% static "js/bootstrap.min.js" %}"></script>
+  <script>
+    var search = $('#search')
+    search.keyup(function(e) {
+      if(e.keyCode == 13) {
+        window.location.href = '/search/?keyword=' + search.val()
+      }
+    })
+  </script>
   {% block scripts %}
   {% endblock scripts %}
 </body>

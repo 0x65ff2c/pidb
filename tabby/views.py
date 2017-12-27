@@ -298,6 +298,7 @@ def spaceless(x):
 
 def search(request):
     if request.method == 'GET':
+        is_authenticated = True if request.user.is_authenticated else False
         keyword = request.GET.get('keyword', None)
         hits = []
         users = [x.tuser for x in User.objects.all().filter(username__contains=keyword)]
@@ -342,7 +343,7 @@ def search(request):
                         question_info['question_content'] = str_compress(reply_content)
                         hits.append(question_info)
                         break
-        return render(request, 'tabby/search.html', {'hit_info': hits})		
+        return render(request, 'tabby/search.html', {'hit_info': hits, 'is_authenticated': is_authenticated})		
     else:
         pass
 
