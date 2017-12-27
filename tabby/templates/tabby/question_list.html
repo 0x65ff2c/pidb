@@ -1,0 +1,36 @@
+<div class="card-body">
+{% for question in q_list %}
+    <section>
+    <div class="row">
+        <div class="col-md-2 qa_rank">
+        <div class="votes">{{ question.total_thumb }}<br>votes</div>
+        <div {% if question.reply_num == 0 %}
+        class="answers-r"
+        {% else %}
+        class="answers-g"
+        {% endif %} >{{ question.reply_num }}<br>replies</div>
+        </div>
+        <div class="col-md-10">
+        <div class="author">
+            <a href="/profile/{{ question.latest_act_user }}">{{ question.latest_act_user }}</a>
+            <span style="color: #999;">&nbsp;&nbsp;&nbsp;{{ question.latest_act_type }}&nbsp;&nbsp;&nbsp;</span>
+            <a href="/question/{{ question.id }}">{{ question.latest_act_time }}</a>
+        </div>
+        <h2 class="title">
+            <a href="/question/{{ question.id }}">
+            {{ question.title }}
+            </a>
+        </h2>
+        <ul class="tag-list">
+        {% for tag in question.tags %}
+            <li class="tag">
+            <a href="/tag/{{ tag }}">{{ tag }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+        </div>
+    </div>
+    <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2); margin:5px 0 10px;" width="100%" color=#987cb9>
+    </section>
+{% endfor %}
+</div>
