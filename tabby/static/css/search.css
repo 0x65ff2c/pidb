@@ -13,9 +13,41 @@ section {
     display: inline-block;
     width: 40px;
     height: 40px;
-    background-color: red;
 }
 
 .user div {
     display: inline-block;
+}
+
+.tag-label {
+    margin-left: 5px;
+    display: inline-block;
+    padding: 0 6px;
+    color: #017E66;
+    background-color: rgba(1,126,102,0.08);
+    height: 40px;
+    line-height: 40px;
+    font-weight: normal;
+    font-size: 20px;
+    text-align: center;
+}
+
+span a:link {
+    text-decoration: none;
+    color: inherit;
+}
+
+span a:visited {
+    text-decoration: none;
+    color: inherit;
+}
+
+span a:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+span a:active {
+    text-decoration: none;
+    color: inherit;
 }
