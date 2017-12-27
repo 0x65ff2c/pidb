@@ -106,6 +106,7 @@ def newQuestion(request):
     """
     to make things easier, the browser tends to get tag name instead of tag id
     """
+    login_username = request.user.username
     if request.method == 'POST':
         title = request.POST.get('title', None)
         tags = request.POST.get('tags', None)
@@ -129,6 +130,7 @@ def newQuestion(request):
         default_taglist = topKCategory(20)
         return render(request, 'tabby/new_question.html',
             {'is_authenticated': True,
+            'login_username': login_username,
             'default_taglist': default_taglist,
             'all_taglist': all_taglist})
 
@@ -149,6 +151,7 @@ def newAnswer(request):
 
 def question(request, q_id):
     is_authenticated = True if request.user.is_authenticated else False
+    login_username = request.user.username if request.user.is_authenticated else ''
     try:
         q = Question.objects.get(id=q_id)
         ans_set = q.reply_set.all()
@@ -185,6 +188,7 @@ def question(request, q_id):
         ans_list.append(ans_info)
     return render(request, 'tabby/question.html', 
         {'is_authenticated': is_authenticated,
+        'login_username': login_username,
         'q_id': q_id,
         'title': title,
         'description': description,
@@ -196,10 +200,12 @@ def home(request):
     if request.method == 'GET':
         order = request.GET.get('order', 0)
         is_authenticated = True if request.user.is_authenticated else False
+        login_username = request.user.username if request.user.is_authenticated else ''
         q_list = getQuestionList(order, Question.objects.all())
         return render(request, 'tabby/home.html',
             {'q_list': q_list,
             'is_authenticated': is_authenticated,
+            'login_username': login_username,
             'order': order})
     else:
         pass	
@@ -299,6 +305,7 @@ def spaceless(x):
 def search(request):
     if request.method == 'GET':
         is_authenticated = True if request.user.is_authenticated else False
+        login_username = request.user.username if request.user.is_authenticated else ''
         keyword = request.GET.get('keyword', None)
         hits = []
         users = [x.tuser for x in User.objects.all().filter(username__contains=keyword)]
@@ -343,7 +350,10 @@ def search(request):
                         question_info['question_content'] = str_compress(reply_content)
                         hits.append(question_info)
                         break
-        return render(request, 'tabby/search.html', {'hit_info': hits, 'is_authenticated': is_authenticated})		
+        return render(request, 'tabby/search.html', 
+            {'hit_info': hits,
+            'is_authenticated': is_authenticated,
+            'login_username': login_username})		
     else:
         pass
 
@@ -354,6 +364,7 @@ def temp(request):
 def tag(request, tag_name):
     if request.method == 'GET':
         is_authenticated = True if request.user.is_authenticated else False
+        login_username = request.user.username if request.user.is_authenticated else ''
         order = request.GET.get('order', 0)
         tag = Category.objects.all().get(name=tag_name)
         tag_id = tag.id
@@ -365,6 +376,7 @@ def tag(request, tag_name):
         q_list = getQuestionList(order, q_model_list)
         return render(request, 'tabby/tag.html',
             {'is_authenticated': is_authenticated,
+            'login_username': login_username,
             'q_list': q_list,
             'order': order,
             'tag_name': tag_name,
