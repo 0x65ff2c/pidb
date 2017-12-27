@@ -209,6 +209,11 @@ def home(request):
 	else:
 		pass	
 
+def intervalActive(user, startTime, endTime):
+	answer = user.question_set.all().filter(Q(put_time__gt=startTime) and Q(put_time__lte=endTime)).count()
+	reply = user.reply_set.all().filter(Q(put_time__gt=startTime) and Q(put_time__lte=endTime)).count()
+	return answer + reply
+
 def profile(request, user_name):
 	try:
 		user = User.objects.all().get(username=user_name).tuser
@@ -242,7 +247,25 @@ def profile(request, user_name):
 			t_info['type'] = 'thumb'
 			q_list.append(t_info)
 		head_image_name = 'img/default.png' if user.headimg.name is None else user.headimg.name
-		return render(request, 'tabby/profile.html', {'user_name': user.user.username, 'user_latest_action': q_list, 'head_image': head_image_name})
+		#chart info
+		now = timezone.now()
+		active_day = [intervalActive(x, x + datetime.timedelta(hours=1)) for x in range(now - datetime.timedelta(hours=24), now, datetime.timedelta(hours=1))]
+		active_week = [intervalActive(x, x + datetime.timedelta(days=1)) for x in range(now - datetime.timedelta(days=7), now, datetime.timedelta(days=1))]
+		active_month = [intervalActive(x, x + datetime.timedelta(days=1)) for x in range(now - datetime.timedelta(days=30), now, datetime.timedelta(days=1))]
+		hour_24 = [str(x.hour) + '时' for x in range(now - datetime.timedelta(hours=24), now, datetime.timedelta(hours=1))]
+		week_7 = [str(x.month) + '月' + str(x.day) + '日' for x in range(now - datetime.timedelta(days=7), now, datetime.timedelta(days=1))]
+		month_30 = [str(x.month) + '月' + str(x.day) + '日' for x in range(now - datetime.timedelta(days=30), now, datetime.timedelta(days=1))]
+		return render(request, 'tabby/temp.html', {
+			'user_name': user.user.username, 
+			'user_latest_action': q_list, 
+			'head_image': head_image_name,
+			'user_description': user.description,
+			'active_day': active_day,
+			'hourp': [0,1,2],
+			'active_week': active_week,
+			'week_7': week_7,
+			'active_month': active_month,
+			'month_30': month_30})
 	else:
 		user.headimg = request.FILES['head_image']
 		user.headimg.name = user.user.username + '_' + str(timezone.now()) + '.jpg'
@@ -373,4 +396,6 @@ def tag(request, tag_name):
 			'tag_name': tag_name,
 			'tag_description': tag.description})
 
-
+def temp(request):
+	if request.method == 'GET':
+		return render(request, 'tabby/temp.html')

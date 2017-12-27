@@ -1,0 +1,59 @@
+{% extends "tabby/base.html" %}
+{% block title %}
+Result
+{% endblock title %}
+{% block css %}
+{% load static %}
+<!--<script src="{% static "js/highcharts.js" %}"></script>
+<script src="{% static "js/exporting.js" %}"></script>
+<script src="{% static "js/highcharts-zh_CN.js" %}"></script>
+<script src="{% static "js/grid-light.js" %}"></script>-->
+{% endblock css %}
+{% block content %}
+<div id="container">
+    {{hourp}}   
+</div>
+{% endblock content %}
+{% block scripts %}
+<script>
+//alert($('#container').data('active'));
+/*var chart = Highcharts.chart('container', {
+    chart: {
+        type: 'spline'
+    },
+    title: {
+        text: 'Day Active'
+    },
+    xAxis: {
+        categories: $('#container').data('active')
+    },
+    yAxis: {
+        title: {
+            text: 'Active'
+        },
+        labels: {
+            formatter: function () {
+                return this.value;
+            }
+        }
+    },
+    tooltip: {
+        crosshairs: true,
+        shared: true
+    },
+    plotOptions: {
+        spline: {
+            marker: {
+                radius: 4,
+                lineColor: '#666666',
+                lineWidth: 1
+            }
+        }
+    },
+    series: [{
+        name: 'orz',
+        data: {{ active_day | safe}}    
+	}]
+});*/
+</script>
+{% endblock scripts %}

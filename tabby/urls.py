@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^vote/$', views.vote, name='vote'),
 	url(r'^profile/(.+?)/$', views.profile, name='profile'),
     url(r'^search/$', views.search, name='search'),
-    url(r'^tag/(.+?)/$', views.tag, name='tag')
+    url(r'^tag/(.+?)/$', views.tag, name='tag'),
+	url(r'^temp/$', views.temp, name='temp')
 ]
