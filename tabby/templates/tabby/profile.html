@@ -63,20 +63,20 @@ Profile
           <div class="col-md-1 side-nav">
             <div>
               <ul class="nav nav-tabs">
-                <li class="active"><a href="javascript: void(0)">Home</a></li>
-                <li><a href="javascript: void(0)">Tutorials</a></li>
-                <li><a href="javascript: void(0)">Practice Editor </a></li>
+                <li class="active"><a href="javascript: void(0)">Daily</a></li>
+                <li><a href="javascript: void(0)">Weekly</a></li>
+                <li><a href="javascript: void(0)">Monthly</a></li>
               </ul>
             </div>
           </div>
           <div class="col-md-10">
-            <div id="liveness-spline" style="margin-top: 10px"></div>
+            <div id="liveness-spline-day" style="margin-top: 10px"></div>
           </div>
           <div class="col-md-10">
-            2nd div
+              <div id="liveness-spline-week" style="margin-top: 10px"></div>
           </div>
           <div class="col-md-10">
-            3rd div
+            <div id="liveness-spline-month" style="margin-top: 10px"></div>
           </div>
         </div>
 		    <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
@@ -182,10 +182,11 @@ Profile
     $('.side-nav li').removeClass('active')
     $('.side-nav li').eq(index).addClass('active')
     $('.overview .col-md-10').hide()
-    alert(index)
+    draw(index)
     $('.overview .col-md-10').eq(index).show()
   })
-
+	
+	draw(0);
 	$('#distribution-pie').highcharts({
 		chart: {
 			type: 'pie'
@@ -214,15 +215,18 @@ Profile
 			series: {{slevel_data | safe}}
 		}
 	});
-	$('#liveness-spline').highcharts({
+	
+	function draw(index) {
+		var flag = (index == 0) ? "day" : (index == 1) ? "week" : "month";
+	$('#liveness-spline-' + flag).highcharts({
 		chart: {
 			type: 'spline'
 		},
 		title: {
-			text: 'Daily Liveness'
+			text: ((index) == 0 ? "Daily" : (index == 1) ? "Weekly" : "Monthly")  + " Liveness"
 		},
 		xAxis: {
-			categories: {{hour_24 | safe}} 
+			categories: (index) == 0 ? {{hour_24 | safe}} : (index == 1) ? {{week_7 | safe}} : {{month_30 | safe}}
 		},
 		yAxis: {
 			title: {
@@ -249,8 +253,10 @@ Profile
 		},
 		series: [{
 			name: 'Liveness',
-			data: {{ active_day | safe}}	  
+			data:  (index) == 0 ? {{active_day | safe}} : (index == 1) ? {{active_week | safe}} : {{active_month | safe}}  
 		}]
 	});
+
+	}
 </script>
 {% endblock scripts %}
