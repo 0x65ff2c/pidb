@@ -11,6 +11,10 @@
     height: 150px;
 }
 
-.profile {
-    
+section a {
+    color: rgb(32, 32, 32);
+}
+
+section a:hover {
+    color: #017E66;
 }

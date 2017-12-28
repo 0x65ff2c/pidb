@@ -48,6 +48,14 @@
     font-size: 16px;
 }
 
+.title a {
+    color: rgb(32, 32, 32);
+}
+
+.title a:hover {
+    color: #017E66;
+}
+
 .tag-list li {
     list-style: none;
     display: inline-block;
