@@ -354,6 +354,8 @@ def profile(request, user_name):
 			'base_data': base_data,
 			'slevel_data': slevel_data})
 	else:
+		if request.user.username != user_name:
+			return
 		if request.FILES.get('head_image', None) is not None:
 			user.headimg = request.FILES.get('head_image', None)
 			user.headimg.name = user.user.username + '_' + str(timezone.now()) + '.jpg'

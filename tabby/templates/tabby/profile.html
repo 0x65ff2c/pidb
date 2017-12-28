@@ -125,6 +125,8 @@ Profile
     }
     $(div_type[index]).show()
   })
+  
+  {% if user_name == login_username %}
   $('.edit-img input').on('change', function() {
     $('.edit-img .btn').click()
   })
@@ -135,6 +137,7 @@ Profile
   function select() {
     return $('.edit-img input').click()
   }
+  {% endif %}
 </script>
 {% load static %}
 <script src="https://img.hcharts.cn/highcharts/highcharts.js"></script>
