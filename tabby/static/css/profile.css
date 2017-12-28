@@ -18,3 +18,18 @@ section a {
 section a:hover {
     color: #017E66;
 }
+
+.side-nav ul {
+    height: 420px;
+}
+
+.side-nav li {
+    width: 130px;
+    height: 130px;
+    -moz-transform:rotate(270deg); 
+    -webkit-transform:rotate(270deg); 
+    -o-transform:rotate(270deg); 
+    transform:rotate(270deg); 
+    filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+

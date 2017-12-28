@@ -59,7 +59,26 @@ Profile
         </ul>
       </div>
       <div class="overview">
-	  	  <div id="liveness-spline" style="margin-top: 10px"></div>
+        <div class="row">
+          <div class="col-md-1 side-nav">
+            <div>
+              <ul class="nav nav-tabs">
+                <li class="active"><a href="javascript: void(0)">Home</a></li>
+                <li><a href="javascript: void(0)">Tutorials</a></li>
+                <li><a href="javascript: void(0)">Practice Editor </a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-10">
+            <div id="liveness-spline" style="margin-top: 10px"></div>
+          </div>
+          <div class="col-md-10">
+            2nd div
+          </div>
+          <div class="col-md-10">
+            3rd div
+          </div>
+        </div>
 		    <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
 		    <div id="distribution-pie"></div>
 	    </div>
@@ -155,7 +174,17 @@ Profile
 		$(div_type[i]).hide()
 	  }
 	  $(div_type[index]).show()
-	});
+  });
+  $('.overview .col-md-10').hide()
+  $('.overview .col-md-10').eq(0).show()
+  $('.side-nav a').on('click', function() {
+    var index = $('.side-nav a').index($(this))
+    $('.side-nav li').removeClass('active')
+    $('.side-nav li').eq(index).addClass('active')
+    $('.overview .col-md-10').hide()
+    alert(index)
+    $('.overview .col-md-10').eq(index).show()
+  })
 
 	$('#distribution-pie').highcharts({
 		chart: {
