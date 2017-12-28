@@ -24,6 +24,12 @@ Tabby
       </ul>
     </div>
     {% include "tabby/question_list.html" %}
+    <center style="margin-bottom: 20px;">
+      <div class="btn-group">
+        <a href="?order={{ order }}&page={{ newer_num }}" class="btn btn-default {% if newer_num == -1 %}disabled{% endif %}">Newer</a>
+        <a href="?order={{ order }}&page={{ older_num }}" class="btn btn-default {% if older_num == -1 %}disabled{% endif %}">Older</a>
+      </div>
+    </center>
   </div>
 </div>
 {% endblock content %}

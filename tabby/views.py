@@ -244,8 +244,22 @@ def home(request):
 		is_authenticated = True if request.user.is_authenticated else False
 		login_username = request.user.username if request.user.is_authenticated else ''
 		q_list = getQuestionList(order, Question.objects.all())
+		page_num = int(request.GET.get('page', 0))
+		page_pre = page_num - 1
+		page_aft = page_num + 1
+		q_num_per_page = 10
+		if page_num == 0:
+			page_pre = -1
+			q_list = q_list[: q_num_per_page]
+		elif (page_num + 1) * q_num_per_page >= len(q_list):
+			page_aft = -1
+			q_list = q_list[page_num * q_num_per_page:]
+		else:
+			q_list = q_list[page_num * q_num_per_page: (page_num + 1) * q_num_per_page]
 		return render(request, 'tabby/home.html',
 			{'q_list': q_list,
+			'newer_num': page_pre,
+			'older_num': page_aft,
 			'is_authenticated': is_authenticated,
 			'login_username': login_username,
 			'order': order})
