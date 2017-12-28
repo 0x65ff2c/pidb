@@ -201,6 +201,7 @@ def question(request, q_id):
 	description = q.description
 	tag = q.category
 	q_author = q.tuser.user.username
+	q_put_time = getTimeDiff(q.put_time, timezone.now())
 	ans_list = []
 	for ans in ans_set:
 		time_diff = getTimeDiff(ans.put_time, timezone.now())
@@ -232,6 +233,7 @@ def question(request, q_id):
 		'q_id': q_id,
 		'title': title,
 		'description': description,
+		'q_put_time': q_put_time,
 		'tags': [Category.objects.all().get(pk=x).name for x in tag.strip().split(',')],
 		'q_author': q_author,
 		'ans_list': ans_list})
