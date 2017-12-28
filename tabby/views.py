@@ -132,13 +132,16 @@ def register(request):
 		name = request.POST.get('user', None)
 		password = request.POST.get('password', None)
 		email = request.POST.get('email', None)
-		user = authenticate(username=name, password=password)
-		if user is None:
-			new_user = User.objects.create_user(name, email, password)
-			new_tuser = Tuser(user=new_user, status=0)
-			new_tuser.save()
-			return render(request, 'tabby/profile.html', {})
-		else:
+		try:
+			user = authenticate(username=name, password=password)
+			if user is None:
+				new_user = User.objects.create_user(name, email, password)
+				new_tuser = Tuser(user=new_user, status=0)
+				new_tuser.save()
+				return redirect('/profile/%s' % name)
+			else:
+				return render(request, 'tabby/error.html', {'err_msg': 'user exist'})
+		except:
 			return render(request, 'tabby/error.html', {'err_msg': 'user exist'})
 
 @login_required
